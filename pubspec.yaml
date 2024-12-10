@@ -61,7 +61,7 @@ flutter:
     - assets/images/StoreMaster.png
     - assets/images/buildApp.png
     - assets/images/manage.png
-    - assets/images/try.png
+    # - assets/images/try.png
     - assets/images/delievery.png
   #   - images/a_dot_ham.jpeg
 

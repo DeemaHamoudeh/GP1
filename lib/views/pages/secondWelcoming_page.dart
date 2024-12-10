@@ -4,6 +4,7 @@ import 'thirdWelcoming_page.dart';
 
 class SecondWelcomingPage extends StatelessWidget {
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(

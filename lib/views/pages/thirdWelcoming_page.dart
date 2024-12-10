@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/colors.dart';
-import 'secondWelcoming_page.dart';
+import 'freetrail.dart';
+
+
 
 class ThirdWelcomingPage extends StatelessWidget {
   @override
@@ -100,7 +102,13 @@ class ThirdWelcomingPage extends StatelessWidget {
 
                 // Next Button (circular with arrow icon)
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WelcomePage()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(), // Circular button
                     backgroundColor:
