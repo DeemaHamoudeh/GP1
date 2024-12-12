@@ -61,8 +61,13 @@ flutter:
     - assets/images/StoreMaster.png
     - assets/images/buildApp.png
     - assets/images/manage.png
-    - assets/images/try.png
     - assets/images/delievery.png
+    - assets/images/color-blind-icon.png
+    - assets/images/old-woman-icon.png
+    - assets/images/low-vision-icon.png
+    - assets/images/loupe.png
+    - assets/images/hidden.png
+    - assets/images/check.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/colors.dart';
 import 'thirdWelcoming_page.dart';
+import 'firstWelcoming_page.dart';
 
 class SecondWelcomingPage extends StatelessWidget {
   @override
@@ -14,7 +15,7 @@ class SecondWelcomingPage extends StatelessWidget {
                 0.6, // 60% of the screen height
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/try.png'),
+                image: AssetImage('assets/images/manage.png'),
                 fit: BoxFit.fill, // Ensures the image covers the container
               ),
             ),
@@ -24,7 +25,7 @@ class SecondWelcomingPage extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
-              'Track deliveries and shipments with ease for seamless customer experiences!',
+              'Effortlessly manage your products and track orders in one place!',
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -104,19 +105,25 @@ class SecondWelcomingPage extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ThirdWelcomingPage()),
+                          builder: (context) => FirstWelcomingPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(), // Circular button
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 28),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                     backgroundColor:
-                        AppColors.basicBackgroundColor, // Background color
-                    padding: const EdgeInsets.all(
-                        16), // Add padding to make it circular
+                        Color(0xFF33B5AB), // Keep the same or use a gradient
+                    elevation: 5,
                   ),
-                  child: const Icon(
-                    Icons.arrow_forward, // Right arrow icon
-                    color: Colors.white, // Icon color
+                  child: Text(
+                    "Confirm",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
