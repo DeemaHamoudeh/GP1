@@ -79,11 +79,11 @@ class _InitializationPageState extends State<InitializationPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF33B5AB), // Your teal color
                     elevation: 3, // Add slight shadow for depth
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         horizontal: 30,
                         vertical: 12), // Add padding for better button size
                   ),
-                  child: Text(
+                  child: const Text(
                     "Confirm",
                     style: TextStyle(
                       fontSize: 18, // Slightly larger button text
@@ -115,7 +115,7 @@ class _InitializationPageState extends State<InitializationPage> {
           : Icon(icon, color: Color(0xFF33B5AB)), // Match the teal theme
       title: Text(
         label,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18, // Set the font size here
         ),
       ),
