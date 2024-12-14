@@ -105,19 +105,19 @@ class SecondWelcomingPage extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => FirstWelcomingPage()),
+                          builder: (context) => ThirdWelcomingPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 28),
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 28),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     backgroundColor:
-                        Color(0xFF33B5AB), // Keep the same or use a gradient
+                        const Color(0xFF33B5AB), // Keep the same or use a gradient
                     elevation: 5,
                   ),
-                  child: Text(
+                  child: const Text(
                     "Confirm",
                     style: TextStyle(
                       fontSize: 16,
