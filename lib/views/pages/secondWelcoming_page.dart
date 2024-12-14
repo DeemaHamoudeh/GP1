@@ -5,7 +5,6 @@ import 'firstWelcoming_page.dart';
 
 class SecondWelcomingPage extends StatelessWidget {
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
@@ -106,21 +105,25 @@ class SecondWelcomingPage extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ThirdWelcomingPage()),
+                          builder: (context) => FirstWelcomingPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 28),
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 28),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     backgroundColor:
-                        const Color(0xFF33B5AB), // Keep the same or use a gradient
+                        Color(0xFF33B5AB), // Keep the same or use a gradient
                     elevation: 5,
                   ),
-                  child: const Icon(
-                    Icons.arrow_forward, // Right arrow icon
-                    color: Colors.white, // Icon color
+                  child: Text(
+                    "Confirm",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
