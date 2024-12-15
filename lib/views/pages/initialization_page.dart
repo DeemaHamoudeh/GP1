@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
-import 'firstWelcoming_page.dart'; // Replace with your actual file name
+import 'package:shared_preferences/shared_preferences.dart';
+import 'firstWelcoming_page.dart';
 
 class InitializationPage extends StatefulWidget {
+  const InitializationPage({super.key});
+
   @override
   _InitializationPageState createState() => _InitializationPageState();
 }
 
 class _InitializationPageState extends State<InitializationPage>
     with TickerProviderStateMixin {
-  // Variable to hold the selected value for the radio button group
   String? _selectedOption;
 
   @override
   void initState() {
     super.initState();
-
-    // Delay for 2 seconds and then show the bottom pop-up window
     Future.delayed(Duration(seconds: 2), () {
       _showBottomPopUp();
     });
   }
 
-  // Function to display the bottom pop-up window
+  // Save selected status to SharedPreferences
+  Future<void> _saveStatus(String status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_status', status);
+    debugPrint("User status saved: $status");
+  }
+
   void _showBottomPopUp() {
     showModalBottomSheet(
       context: context,
@@ -31,12 +37,11 @@ class _InitializationPageState extends State<InitializationPage>
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       transitionAnimationController: AnimationController(
-        vsync: this, // This is required to control the animation
-        duration: Duration(milliseconds: 500), // Adjust animation duration here
+        vsync: this,
+        duration: Duration(milliseconds: 500),
       ),
       builder: (BuildContext context) {
         return StatefulBuilder(
-          // Add StatefulBuilder to manage state within the modal sheet
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -96,13 +101,24 @@ class _InitializationPageState extends State<InitializationPage>
                   ),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FirstWelcomingPage(),
-                          ),
-                        );
+                      onPressed: () async {
+                        if (_selectedOption != null) {
+                          // Save the selected option to SharedPreferences
+                          await _saveStatus(_selectedOption!);
+
+                          // Navigate to the next page
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FirstWelcomingPage(),
+                            ),
+                          );
+                        } else {
+                          // Show an alert if no option is selected
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Please select an option.")),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF33B5AB),
@@ -128,7 +144,6 @@ class _InitializationPageState extends State<InitializationPage>
     );
   }
 
-  // Widget for building options
   Widget _buildOptionWithState(
       String label, dynamic icon, String value, StateSetter setModalState) {
     return ListTile(
@@ -153,11 +168,9 @@ class _InitializationPageState extends State<InitializationPage>
         value: value,
         groupValue: _selectedOption,
         onChanged: (String? newValue) {
-          // Use setModalState to rebuild the modal UI
           setModalState(() {
             _selectedOption = newValue;
           });
-          // Optional: Also call the main setState for other tracking
           setState(() {
             _selectedOption = newValue;
           });
@@ -175,7 +188,7 @@ class _InitializationPageState extends State<InitializationPage>
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/StoreMaster.png'),
-            fit: BoxFit.fill, // Adjust the image size to cover the screen
+            fit: BoxFit.fill,
           ),
         ),
       ),

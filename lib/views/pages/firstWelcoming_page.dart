@@ -3,6 +3,8 @@ import 'package:frontend/constants/colors.dart';
 import 'secondWelcoming_page.dart';
 
 class FirstWelcomingPage extends StatelessWidget {
+  const FirstWelcomingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

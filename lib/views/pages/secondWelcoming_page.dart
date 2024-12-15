@@ -4,6 +4,8 @@ import 'thirdWelcoming_page.dart';
 import 'firstWelcoming_page.dart';
 
 class SecondWelcomingPage extends StatelessWidget {
+  const SecondWelcomingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
