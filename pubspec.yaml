@@ -70,6 +70,8 @@ flutter:
     - assets/images/loupe.png
     - assets/images/hidden.png
     - assets/images/check.png
+    - assets/images/shopping.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
