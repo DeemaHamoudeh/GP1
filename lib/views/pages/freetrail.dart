@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'thirdWelcoming_page.dart';
-import 'registor_page.dart';
+import 'role_selection_page.dart';
+// import 'registor_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -77,7 +77,7 @@ class WelcomePage extends StatelessWidget {
                 Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SignUpPage()),
+                  builder: (context) => RoleSelectionPage()),
                 );               
               },
 

@@ -5,7 +5,7 @@ class SignUpPage extends StatelessWidget {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
-  final TextEditingController shopNameController = TextEditingController();
+  // final TextEditingController shopNameController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -17,7 +17,6 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up for StoreMaster')),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -62,16 +61,16 @@ class SignUpPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Shop Name Text Field
-              TextFormField(
-                controller: shopNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Shop Name',
-                  prefixIcon: Icon(Icons.store),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
+              // // Shop Name Text Field
+              // TextFormField(
+              //   controller: shopNameController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Shop Name',
+              //     prefixIcon: Icon(Icons.store),
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
+              // const SizedBox(height: 16),
 
               // Date of Birth Text Field
               TextFormField(
