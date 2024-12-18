@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/colors.dart';
-import 'freetrail.dart';
+import 'login_page.dart';
 
 
 
@@ -108,7 +108,7 @@ class ThirdWelcomingPage extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => WelcomePage()),
+                          builder: (context) => LoginPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

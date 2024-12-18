@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'registor_page.dart';
+import 'role_selection_page.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -10,7 +10,6 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login for StoreMaster')),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -64,7 +63,7 @@ class LoginPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignUpPage()),
+                  MaterialPageRoute(builder: (context) => RoleSelectionPage()),
                 );
               },
               child: const Text('Don\'t have an account? Sign Up'),
