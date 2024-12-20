@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/colors.dart';
 import 'login_page.dart';
 
-
-
 class ThirdWelcomingPage extends StatelessWidget {
   const ThirdWelcomingPage({super.key});
 
@@ -18,7 +16,7 @@ class ThirdWelcomingPage extends StatelessWidget {
                 0.6, // 60% of the screen height
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/delievery.png'),
+                image: AssetImage('assets/images/welcomingPages/delievery.png'),
                 fit: BoxFit.fill, // Ensures the image covers the container
               ),
             ),
@@ -107,8 +105,7 @@ class ThirdWelcomingPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginPage()),
+                      MaterialPageRoute(builder: (context) => LoginPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

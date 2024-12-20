@@ -60,17 +60,24 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/StoreMaster.png
-    - assets/images/buildApp.png
-    - assets/images/manage.png
-    - assets/images/delievery.png
-    - assets/images/color-blind-icon.png
-    - assets/images/old-woman-icon.png
-    - assets/images/low-vision-icon.png
-    - assets/images/loupe.png
-    - assets/images/hidden.png
-    - assets/images/check.png
-    - assets/images/shopping.png
+    - assets/images/welcomingPages/StoreMaster.png
+    - assets/images/welcomingPages/buildApp.png
+    - assets/images/welcomingPages/manage.png
+    - assets/images/welcomingPages/delievery.png
+    - assets/images/welcomingPages/color-blind-icon.png
+    - assets/images/welcomingPages/old-woman-icon.png
+    - assets/images/welcomingPages/low-vision-icon.png
+    - assets/images/welcomingPages/loupe.png
+    - assets/images/welcomingPages/hidden.png
+    - assets/images/welcomingPages/check.png
+    - assets/images/welcomingPages/shopping.png
+    - assets/images/logPages/login-wallpaper.png
+    - assets/images/logPages/owner-icon.png
+    - assets/images/logPages/staff-icon.png
+    - assets/images/logPages/employee-icon.png
+    - assets/images/logPages/customer-icon.png
+    - assets/images/logPages/SignUp-Wallpaper.png
+    
 
   #   - images/a_dot_ham.jpeg
 

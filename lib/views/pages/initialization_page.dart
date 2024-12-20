@@ -71,31 +71,31 @@ class _InitializationPageState extends State<InitializationPage>
                   const SizedBox(height: 20),
                   _buildOptionWithState(
                     "I am colorblind",
-                    "assets/images/color-blind-icon.png",
+                    "assets/images/welcomingPages/color-blind-icon.png",
                     "colorblind",
                     setModalState,
                   ),
                   _buildOptionWithState(
                     "I am elderly",
-                    "assets/images/old-woman-icon.png",
+                    "assets/images/welcomingPages/old-woman-icon.png",
                     "elderly",
                     setModalState,
                   ),
                   _buildOptionWithState(
                     "I have low vision",
-                    "assets/images/low-vision-icon.png",
+                    "assets/images/welcomingPages/low-vision-icon.png",
                     "low_vision",
                     setModalState,
                   ),
                   _buildOptionWithState(
                     "I am blind",
-                    "assets/images/hidden.png",
+                    "assets/images/welcomingPages/hidden.png",
                     "blind",
                     setModalState,
                   ),
                   _buildOptionWithState(
                     "I don’t have any accessibility needs",
-                    "assets/images/check.png",
+                    "assets/images/welcomingPages/check.png",
                     "none",
                     setModalState,
                   ),
@@ -187,7 +187,7 @@ class _InitializationPageState extends State<InitializationPage>
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/StoreMaster.png'),
+            image: AssetImage('assets/images/welcomingPages/StoreMaster.png'),
             fit: BoxFit.fill,
           ),
         ),

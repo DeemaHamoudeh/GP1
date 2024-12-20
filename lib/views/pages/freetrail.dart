@@ -23,7 +23,8 @@ class WelcomePage extends StatelessWidget {
             const Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(top: 70.0, left: 30.0, right: 30.0, bottom: 30.0),
+                padding: EdgeInsets.only(
+                    top: 70.0, left: 30.0, right: 30.0, bottom: 30.0),
                 child: Text(
                   "StoreMaster",
                   style: TextStyle(
@@ -49,25 +50,27 @@ class WelcomePage extends StatelessWidget {
                 child: Text(
                   "Welcome to StoreMaster\nBuild your own store Now!",
                   style: TextStyle(
-                    fontSize: 20,  
-                    fontWeight: FontWeight.bold,  
-                    color: Colors.black,  
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
               ),
             ),
             // pic container
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0), 
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.60, 
-                width: MediaQuery.of(context).size.width * 0.9, 
+                height: MediaQuery.of(context).size.height * 0.60,
+                width: MediaQuery.of(context).size.width * 0.9,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/shopping.png'),
-                    fit: BoxFit.cover, 
+                    image:
+                        AssetImage('assets/images/welcomingPages/shopping.png'),
+                    fit: BoxFit.cover,
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(40)), // Circular edges
+                  borderRadius:
+                      BorderRadius.all(Radius.circular(40)), // Circular edges
                 ),
               ),
             ),
@@ -75,15 +78,15 @@ class WelcomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RoleSelectionPage()),
-                );               
+                  context,
+                  MaterialPageRoute(builder: (context) => RoleSelectionPage()),
+                );
               },
-
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                textStyle:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),

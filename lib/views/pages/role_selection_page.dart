@@ -1,117 +1,164 @@
 import 'package:flutter/material.dart';
-import 'registor_page.dart';
+import 'choosePlan_page.dart';
 
 class RoleSelectionPage extends StatefulWidget {
+  const RoleSelectionPage({Key? key}) : super(key: key);
+
   @override
-  _RoleSelectionPageState createState() => _RoleSelectionPageState();
+  State<RoleSelectionPage> createState() => _RoleSelectionPageState();
 }
 
 class _RoleSelectionPageState extends State<RoleSelectionPage> {
-  // List of roles and selected role
-  final List<Map<String, dynamic>> roles = [
-    {'name': 'Employee', 'icon': Icons.work},
-    {'name': 'Owner', 'icon': Icons.business},
-    {'name': 'App Staff', 'icon': Icons.admin_panel_settings},
-    {'name': 'Customer', 'icon': Icons.shopping_cart},
-  ];
+  String selectedRole = "";
 
-  String? selectedRole; // Holds the currently selected role
+  Widget roleBox(String title, String imagePath) {
+    bool isSelected = selectedRole == title;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedRole = title;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: isSelected ? Colors.teal : Colors.grey.shade300,
+            width: isSelected ? 3 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12.withOpacity(0.1),
+              offset: const Offset(0, 4),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              imagePath,
+              width: 60,
+              height: 60,
+              color: isSelected ? Colors.teal : null,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 15),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.teal : Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
-      body: Center( 
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Shrink the column size
+      body: SafeArea(
+        child: Stack(
           children: [
-            
-            SizedBox(
-              height: 400, // Restrict the height to center the grid nicely
-              child: GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Two boxes per row
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.2, // Adjust aspect ratio of boxes
-                ),
-                itemCount: roles.length,
-                itemBuilder: (context, index) {
-                  final role = roles[index];
-                  final isSelected = selectedRole == role['name'];
-
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedRole = role['name'];
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.teal : Colors.white,
-                        border: Border.all(
-                          color: isSelected ? Colors.teal.shade700 : Colors.grey,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            offset: Offset(0, 2),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            role['icon'],
-                            size: 50,
-                            color: isSelected ? Colors.white : Colors.teal,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            role['name'],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+            Positioned(
+              top: 20,
+              left: 20,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
                 },
+                child: CircleAvatar(
+                  backgroundColor: Colors.teal,
+                  radius: 20,
+                  child: const Icon(Icons.arrow_back, color: Colors.white),
+                ),
               ),
             ),
-
-            // Confirm Button
-            if (selectedRole != null) // Show confirm button only when role is selected
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Text(
+                      "Select Your Account Type",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 27,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'Confirm',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    childAspectRatio: 1,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      roleBox("Store Owner",
+                          "assets/images/logPages/owner-icon.png"),
+                      roleBox("Customer",
+                          "assets/images/logPages/customer-icon.png"),
+                      roleBox("Store Employee",
+                          "assets/images/logPages/employee-icon.png"),
+                      roleBox("Staff", "assets/images/logPages/staff-icon.png"),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 180,
+              child: ElevatedButton(
+                onPressed: selectedRole.isNotEmpty
+                    ? () {
+                        if (selectedRole == "Store Owner") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  choosePlanPage(role: selectedRole),
+                            ),
+                          );
+                        }
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  disabledBackgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: selectedRole.isNotEmpty ? 5 : 0,
+                ),
+                child: const Text(
+                  "Next",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),

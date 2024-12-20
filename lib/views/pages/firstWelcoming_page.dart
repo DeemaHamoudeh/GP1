@@ -16,7 +16,7 @@ class FirstWelcomingPage extends StatelessWidget {
                 0.6, // 60% of the screen height
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/buildApp.png'),
+                image: AssetImage('assets/images/welcomingPages/buildApp.png'),
                 fit: BoxFit.fill, // Ensures the image covers the container
               ),
             ),

@@ -17,7 +17,7 @@ class SecondWelcomingPage extends StatelessWidget {
                 0.6, // 60% of the screen height
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/manage.png'),
+                image: AssetImage('assets/images/welcomingPages/manage.png'),
                 fit: BoxFit.fill, // Ensures the image covers the container
               ),
             ),
@@ -111,21 +111,15 @@ class SecondWelcomingPage extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 28),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                    shape: const CircleBorder(), // Circular button
                     backgroundColor:
-                        const Color(0xFF33B5AB), // Keep the same or use a gradient
-                    elevation: 5,
+                        AppColors.basicBackgroundColor, // Background color
+                    padding: const EdgeInsets.all(
+                        16), // Add padding to make it circular
                   ),
-                  child: const Text(
-                    "Confirm",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                  child: const Icon(
+                    Icons.arrow_forward, // Right arrow icon
+                    color: Colors.white, // Icon color
                   ),
                 ),
               ],
