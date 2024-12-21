@@ -131,15 +131,18 @@ class _HoverableCardState extends State<HoverableCard> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building HoverableCard");
     return MouseRegion(
       onEnter: (_) {
         setState(() {
           _isHovered = true;
+          debugPrint("Hover entered");
         });
       },
       onExit: (_) {
         setState(() {
           _isHovered = false;
+          debugPrint("Hover nott entered");
         });
       },
       child: AnimatedContainer(
@@ -147,23 +150,24 @@ class _HoverableCardState extends State<HoverableCard> {
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          boxShadow: _isHovered
-              ? [
-                  BoxShadow(
-                    color: widget.isPremium
-                        ? Colors.teal.withOpacity(0.7)
-                        : Colors.grey.withOpacity(0.7),
-                    blurRadius: 15,
-                    spreadRadius: 5,
-                  ),
-                ]
-              : [], // No shadow when not hovered
+          boxShadow: [
+            BoxShadow(
+              color: _isHovered
+                  ? (widget.isPremium
+                      ? Colors.teal.withOpacity(0.7)
+                      : Colors.grey.withOpacity(0.7))
+                  : Colors.grey.withOpacity(0.3),
+              blurRadius: _isHovered ? 15 : 5,
+              spreadRadius: _isHovered ? 5 : 1,
+            ),
+          ],
         ),
         child: Card(
-          elevation: 5, // This is optional if you want the base card elevation
+          elevation: 0,
           color: widget.isPremium ? Colors.teal : Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

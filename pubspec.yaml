@@ -77,6 +77,9 @@ flutter:
     - assets/images/logPages/employee-icon.png
     - assets/images/logPages/customer-icon.png
     - assets/images/logPages/SignUp-Wallpaper.png
+    - assets/images/logPages/wall1.png
+    - assets/images/logPages/wall2.png
+    - assets/images/logPages/wall3.png
     
 
   #   - images/a_dot_ham.jpeg
