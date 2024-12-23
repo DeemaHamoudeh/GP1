@@ -76,7 +76,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: CircleAvatar(
+                child: const CircleAvatar(
                   backgroundColor: Colors.teal,
                   radius: 20,
                   child: const Icon(Icons.arrow_back, color: Colors.white),
