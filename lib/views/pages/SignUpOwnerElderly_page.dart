@@ -3,21 +3,21 @@ import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatte
 import 'package:frontend/constants/colors.dart';
 import 'choosePlan_page.dart';
 
-class SignUpStoreOwnerPage extends StatefulWidget {
+class SignUpStoreOwnerPageElderly extends StatefulWidget {
   final String role;
   final String plan;
 
-  const SignUpStoreOwnerPage({
+  const SignUpStoreOwnerPageElderly({
     Key? key,
     required this.role,
     required this.plan,
   }) : super(key: key);
 
   @override
-  State<SignUpStoreOwnerPage> createState() => _SignUpStoreOwnerPageState();
+  State<SignUpStoreOwnerPageElderly> createState() => _SignUpStoreOwnerPageState();
 }
 
-class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
+class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPageElderly> {
   final _formKey = GlobalKey<FormState>();
   bool isPaidAccount = false;
 
@@ -85,7 +85,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Sign up as Store Owner (${widget.plan})",
+                          "Sign up as Store Owner elderly (${widget.plan})",
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
@@ -111,7 +111,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      labelText: "ُEmail",
+                      labelText: "Email",
                       icon: Icons.email_outlined,
                       validator: (value) =>
                           value!.isEmpty ? "Please enter your Email" : null,
@@ -158,7 +158,32 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                           ? "Please enter your phone number"
                           : null,
                     ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      labelText: "Security Question 1: What is your favorite color?",
+                      icon: Icons.question_answer,
+                      validator: (value) => value!.isEmpty
+                          ? "Please answer this security question"
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      labelText: "Security Question 2: What is your pet's name?",
+                      icon: Icons.question_answer,
+                      validator: (value) => value!.isEmpty
+                          ? "Please answer this security question"
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      labelText: "Security Question 3: What is your childhood nickname?",
+                      icon: Icons.question_answer,
+                      validator: (value) => value!.isEmpty
+                          ? "Please answer this security question"
+                          : null,
+                    ),
                     const SizedBox(height: 40),
+
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
