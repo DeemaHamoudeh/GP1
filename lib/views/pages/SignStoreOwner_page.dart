@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
 import 'choosePlan_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpStoreOwnerPage extends StatefulWidget {
   final String role;
@@ -21,10 +22,22 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
   final _formKey = GlobalKey<FormState>();
   bool isPaidAccount = false;
 
+  String? selectedAccessibility; // Variable to store selected accessibility
+
   @override
   void initState() {
     super.initState();
     isPaidAccount = widget.plan.toLowerCase() == "premium";
+    _loadAccessibilityStatus();
+  }
+
+  // Function to load the accessibility status from shared preferences
+  void _loadAccessibilityStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedAccessibility = prefs.getString('accessibilityStatus') ??
+          'None'; // Default to 'None' if not set
+    });
   }
 
   @override
@@ -94,20 +107,34 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                         const SizedBox(height: 20),
                       ],
                     ),
+                    // const SizedBox(height: 20),
+                    // _buildTextField(
+                    //   labelText: "First Name",
+                    //   icon: Icons.person,
+                    //   validator: (value) => value!.isEmpty
+                    //       ? "Please enter your first name"
+                    //       : null,
+                    // ),
+                    // const SizedBox(height: 20),
+                    // _buildTextField(
+                    //   labelText: "Last Name",
+                    //   icon: Icons.person_outline,
+                    //   validator: (value) =>
+                    //       value!.isEmpty ? "Please enter your last name" : null,
+                    // ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      labelText: "First Name",
+                      labelText: "username",
                       icon: Icons.person,
-                      validator: (value) => value!.isEmpty
-                          ? "Please enter your first name"
-                          : null,
+                      validator: (value) =>
+                          value!.isEmpty ? "Please enter your username" : null,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      labelText: "Last Name",
-                      icon: Icons.person_outline,
+                      labelText: "email",
+                      icon: Icons.email,
                       validator: (value) =>
-                          value!.isEmpty ? "Please enter your last name" : null,
+                          value!.isEmpty ? "Please enter your " : null,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
@@ -127,18 +154,18 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                           ? "Please confirm your password"
                           : null,
                     ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Date of Birth",
-                      icon: Icons.calendar_today,
-                      keyboardType: TextInputType.datetime,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9/.-]')),
-                      ],
-                      validator: (value) => value!.isEmpty
-                          ? "Please enter your Date of Birth"
-                          : null,
-                    ),
+                    // const SizedBox(height: 20),
+                    // _buildTextField(
+                    //   labelText: "Date of Birth",
+                    //   icon: Icons.calendar_today,
+                    //   keyboardType: TextInputType.datetime,
+                    //   inputFormatters: [
+                    //     FilteringTextInputFormatter.allow(RegExp(r'[0-9/.-]')),
+                    //   ],
+                    //   validator: (value) => value!.isEmpty
+                    //       ? "Please enter your Date of Birth"
+                    //       : null,
+                    // ),
                     const SizedBox(height: 20),
                     _buildTextField(
                       labelText: "Phone Number",
@@ -151,6 +178,53 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                           ? "Please enter your phone number"
                           : null,
                     ),
+                    const SizedBox(height: 20),
+                    // Accessibility Dropdown
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Accessibility Status',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.accessibility,
+                          color: AppColors.basicBackgroundColor,
+                          size: 24,
+                        ),
+                      ),
+                      value: selectedAccessibility,
+                      items: [
+                        'Colorblind',
+                        'Blind',
+                        'Low Vision',
+                        'Elderly',
+                        'None',
+                      ].map((String accessibility) {
+                        return DropdownMenuItem<String>(
+                          value: accessibility,
+                          child: Text(accessibility),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedAccessibility = value;
+                          // Save the selected value to SharedPreferences
+                          SharedPreferences.getInstance().then((prefs) {
+                            prefs.setString(
+                                'accessibilityStatus', value ?? 'None');
+                          });
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select your accessibility status';
+                        }
+                        return null;
+                      },
+                    ),
+
                     const SizedBox(height: 40),
                     Center(
                       child: ElevatedButton(

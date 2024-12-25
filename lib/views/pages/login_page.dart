@@ -62,7 +62,7 @@ class LoginPage extends StatelessWidget {
                             child: TextField(
                               style: const TextStyle(color: Colors.black),
                               decoration: InputDecoration(
-                                labelText: "Username",
+                                labelText: "Username or Email",
                                 labelStyle:
                                     const TextStyle(color: Colors.black54),
                                 contentPadding: const EdgeInsets.symmetric(
