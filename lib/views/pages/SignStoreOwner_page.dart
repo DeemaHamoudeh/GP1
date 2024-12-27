@@ -4,6 +4,7 @@ import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatte
 import 'package:frontend/constants/colors.dart';
 import 'choosePlan_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../controllers/userController.dart';
 
 class SignUpStoreOwnerPage extends StatefulWidget {
   final String role;
@@ -441,15 +442,41 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                     const SizedBox(height: 40),
                     Center(
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            if (isPaidAccount) {
-                              debugPrint(
-                                  "Proceed to Payment for ${widget.role} (${widget.plan} Plan)");
-                            } else {
-                              debugPrint(
-                                  "Form Submitted for ${widget.role} (${widget.plan} Plan)");
-                            }
+                        onPressed: () async {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            // Collect form data
+                            final username = _usernameController.text.trim();
+                            final email = _emailController.text.trim();
+                            final password = _passwordController.text.trim();
+                            final confirmPassword =
+                                _confirmPasswordController.text.trim();
+                            final condition = selectedAccessibility ??
+                                'None'; // Use the selected accessibility
+
+                            // Call the signup function in UserController
+                            // UserController().signup(
+                            //   username,
+                            //   email,
+                            //   password,
+                            //   confirmPassword,
+                            //   widget.role,
+                            //   widget.plan,
+                            //   condition,
+                            // );
+
+                            // Handle the result
+                            // if (isSuccess) {
+                            //   // Navigate to the next page or show success message
+                            //   // Navigator.push(
+                            //   //   context,
+                            //   //   MaterialPageRoute(builder: (context) => ChoosePlanPage()),
+                            //   // );
+                            // } else {
+                            //   // Show error message
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     SnackBar(content: Text('Signup failed. Please try again.')),
+                            //   );
+                            // }
                           }
                         },
                         style: ElevatedButton.styleFrom(

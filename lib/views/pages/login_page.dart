@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'role_selection_page.dart';
+import '../../../controllers/userController.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +29,10 @@ class LoginPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: SingleChildScrollView(
-                // Add this
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 180),
-                    // Welcome Text
                     const Text(
                       "Welcome!",
                       style: TextStyle(
@@ -38,7 +45,6 @@ class LoginPage extends StatelessWidget {
                     // Username Row with Icon and TextField
                     Row(
                       children: [
-                        // Circular Icon
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -52,23 +58,18 @@ class LoginPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 15),
-
-                        // Username Field
                         Expanded(
                           child: Container(
-                            constraints: const BoxConstraints(
-                              maxWidth: 350, // Limit the max width of the field
-                            ),
+                            constraints: const BoxConstraints(maxWidth: 350),
                             child: TextField(
+                              controller: _usernameController,
                               style: const TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 labelText: "Username or Email",
                                 labelStyle:
                                     const TextStyle(color: Colors.black54),
                                 contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal:
-                                        15), // Adjust padding inside the TextField
+                                    vertical: 10, horizontal: 15),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide:
                                       const BorderSide(color: Colors.black45),
@@ -93,7 +94,6 @@ class LoginPage extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            // Circular Icon
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
@@ -107,15 +107,12 @@ class LoginPage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 15),
-
-                            // Password Field
                             Expanded(
                               child: Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth:
-                                      350, // Limit the max width of the field
-                                ),
+                                constraints:
+                                    const BoxConstraints(maxWidth: 350),
                                 child: TextField(
+                                  controller: _passwordController,
                                   obscureText: true,
                                   style: const TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
@@ -123,9 +120,7 @@ class LoginPage extends StatelessWidget {
                                     labelStyle:
                                         const TextStyle(color: Colors.black54),
                                     contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 10,
-                                        horizontal:
-                                            15), // Adjust padding inside the TextField
+                                        vertical: 10, horizontal: 15),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: const BorderSide(
                                           color: Colors.black45),
@@ -143,13 +138,10 @@ class LoginPage extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 5),
-
-                        // Align Reset Password Text to the right
                         Align(
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: () {
-                              // Navigate to Reset Password screen
                               print("Navigate to Reset Password screen");
                             },
                             child: const Text(
@@ -164,13 +156,14 @@ class LoginPage extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 40),
 
                     // Login Button
                     ElevatedButton(
                       onPressed: () {
-                        // Add login functionality
+                        String username = _usernameController.text;
+                        String password = _passwordController.text;
+                        UserController().login(username, password);
                       },
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(150, 50),
@@ -189,7 +182,6 @@ class LoginPage extends StatelessWidget {
                     // Sign Up Text
                     GestureDetector(
                       onTap: () {
-                        // Navigate to Sign Up screen
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -200,15 +192,13 @@ class LoginPage extends StatelessWidget {
                       child: RichText(
                         text: TextSpan(
                           text: "Don't have an account? ",
-                          style: const TextStyle(
-                            color: Colors.grey, // Grey color for the first part
-                            fontSize: 16,
-                          ),
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 16),
                           children: [
                             TextSpan(
                               text: "Sign Up",
                               style: const TextStyle(
-                                color: Colors.teal, // Teal color for "Sign Up"
+                                color: Colors.teal,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
