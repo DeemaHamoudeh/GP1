@@ -21,6 +21,7 @@ class SignUpStoreOwnerPage extends StatefulWidget {
 }
 
 class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
+  String errorMessage = '';
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -205,21 +206,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                         const SizedBox(height: 20),
                       ],
                     ),
-                    // const SizedBox(height: 20),
-                    // _buildTextField(
-                    //   labelText: "First Name",
-                    //   icon: Icons.person,
-                    //   validator: (value) => value!.isEmpty
-                    //       ? "Please enter your first name"
-                    //       : null,
-                    // ),
-                    // const SizedBox(height: 20),
-                    // _buildTextField(
-                    //   labelText: "Last Name",
-                    //   icon: Icons.person_outline,
-                    //   validator: (value) =>
-                    //       value!.isEmpty ? "Please enter your last name" : null,
-                    // ),
+
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _usernameController,
@@ -368,18 +355,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                         });
                       },
                     ),
-                    // const SizedBox(height: 20),
-                    // _buildTextField(
-                    //   labelText: "Date of Birth",
-                    //   icon: Icons.calendar_today,
-                    //   keyboardType: TextInputType.datetime,
-                    //   inputFormatters: [
-                    //     FilteringTextInputFormatter.allow(RegExp(r'[0-9/.-]')),
-                    //   ],
-                    //   validator: (value) => value!.isEmpty
-                    //       ? "Please enter your Date of Birth"
-                    //       : null,
-                    // ),
+
                     const SizedBox(height: 20),
                     _buildTextField(
                       labelText: "Phone Number",
@@ -438,8 +414,16 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                         return null;
                       },
                     ),
+                    if (errorMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 0.0),
+                        child: Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red, fontSize: 15),
+                        ),
+                      ),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 30),
                     Center(
                       child: ElevatedButton(
                         onPressed: () async {
@@ -453,30 +437,30 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                             final condition = selectedAccessibility ??
                                 'None'; // Use the selected accessibility
 
-                            // Call the signup function in UserController
-                            // UserController().signup(
-                            //   username,
-                            //   email,
-                            //   password,
-                            //   confirmPassword,
-                            //   widget.role,
-                            //   widget.plan,
-                            //   condition,
-                            // );
+                            // Await the result from the signup function
+                            final result = await UserController().signup(
+                              username: username,
+                              email: email,
+                              password: password,
+                              confirmPassword: confirmPassword,
+                              role: widget.role,
+                              plan: widget.plan,
+                              condition: condition,
+                            );
 
-                            // Handle the result
-                            // if (isSuccess) {
-                            //   // Navigate to the next page or show success message
-                            //   // Navigator.push(
-                            //   //   context,
-                            //   //   MaterialPageRoute(builder: (context) => ChoosePlanPage()),
-                            //   // );
-                            // } else {
-                            //   // Show error message
-                            //   ScaffoldMessenger.of(context).showSnackBar(
-                            //     SnackBar(content: Text('Signup failed. Please try again.')),
-                            //   );
-                            // }
+                            // Use setState to update the UI with the error or success message
+                            setState(() {
+                              errorMessage = result[
+                                  'message']; // Update errorMessage dynamically
+                            });
+
+                            // Check success status and take appropriate action
+                            if (result['success']) {
+                              // Navigate to another screen or show a success dialog/snackbar
+                              print("Signup successful!");
+                            } else {
+                              print("Signup failed: ${result['message']}");
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

@@ -1,82 +1,57 @@
 class UserModel {
-  final String identifier;
+  final String? username; // Username for signup
+  final String? email; // Email for signup or login
+  final String? identifier; // Username or email for login
   final String password;
+  final String? confirmPassword; // Only for signup
+  final String? role; // Only for signup
+  final String? plan; // Only for signup
+  final String? condition; // Only for signup
 
-  UserModel({required this.identifier, required this.password});
-
-  // Convert a UserModel to a JSON object
-  Map<String, dynamic> toJson() {
-    return {
-      'identifier': identifier,
-      'password': password,
-    };
-  }
-
-  // Convert a JSON object to a UserModel
-  static UserModel fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      identifier: json['identifier'],
-      password: json['password'],
-    );
-  }
-}
-
-class LoginResponse {
-  final String message;
-  final String token;
-  final UserData user;
-
-  LoginResponse(
-      {required this.message, required this.token, required this.user});
-
-  Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-      'token': token,
-      'user': user.toJson(),
-    };
-  }
-
-  static LoginResponse fromJson(Map<String, dynamic> json) {
-    return LoginResponse(
-      message: json['message'],
-      token: json['token'],
-      user: UserData.fromJson(json['user']),
-    );
-  }
-}
-
-class UserData {
-  final String id;
-  final String username;
-  final String email;
-  final String role;
-  final String condition;
-
-  UserData({
-    required this.id,
-    required this.username,
-    required this.email,
-    required this.role,
-    required this.condition,
+  UserModel({
+    this.username,
+    this.email,
+    this.identifier,
+    required this.password,
+    this.confirmPassword,
+    this.role,
+    this.plan,
+    this.condition,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'username': username,
-      'email': email,
-      'role': role,
-      'condition': condition,
-    };
+  // Convert a UserModel to JSON for API requests
+  Map<String, dynamic> toJson({bool forSignup = false}) {
+    print('toJson called with forSignup: $forSignup');
+    if (forSignup) {
+      // For signup, include username and email separately
+      return {
+        'username': username,
+        'email': email,
+        'password': password,
+        'confirmPassword': confirmPassword,
+        'role': role,
+        'plan': plan,
+        'condition': condition,
+      };
+    } else {
+      // For login, use identifier (username or email)
+      return {
+        'identifier': identifier,
+        'password': password,
+      };
+    }
   }
 
-  static UserData fromJson(Map<String, dynamic> json) {
-    return UserData(
-      id: json['id'],
+  // Create a UserModel from JSON response
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       username: json['username'],
       email: json['email'],
+      identifier: json['identifier'],
+      password: json['password'],
+      confirmPassword: json['confirmPassword'],
       role: json['role'],
+      plan: json['plan'],
       condition: json['condition'],
     );
   }
