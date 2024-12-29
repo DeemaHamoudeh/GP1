@@ -81,6 +81,11 @@ flutter:
     - assets/images/logPages/wall1.png
     - assets/images/logPages/wall2.png
     - assets/images/logPages/wall3.png
+    - assets/images/logPages/forgot-password (2).png
+    - assets/images/logPages/letter (1).png
+    - assets/images/logPages/correctPassword.png
+  
+    
     
 
   #   - images/a_dot_ham.jpeg

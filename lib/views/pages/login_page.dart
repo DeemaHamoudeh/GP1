@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'role_selection_page.dart';
+import 'forgetPassword_page.dart';
 import '../../../controllers/userController.dart';
 
 class LoginPage extends StatefulWidget {
@@ -148,6 +149,12 @@ class _LoginPageState extends State<LoginPage> {
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ForgotPasswordPage()),
+                                );
                                 print("Navigate to Reset Password screen");
                               },
                               child: const Text(
