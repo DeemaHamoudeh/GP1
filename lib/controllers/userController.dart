@@ -84,4 +84,100 @@ class UserController {
       return {'success': false, 'message': "An error occurred: $error"};
     }
   }
+
+  // Send Email Function for Password Reset
+  Future<Map<String, dynamic>> sendEmail(String email) async {
+    try {
+      final response =
+          await userApiHelper.post('users/reset-password/request-Email', {
+        'email': email,
+      });
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': 'Email sent successfully.'};
+      } else {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': false,
+          'message': responseBody['message'] ?? 'Failed to send email.'
+        };
+      }
+    } catch (error) {
+      print("Error during sendEmail: $error");
+      return {'success': false, 'message': 'An error occurred: $error'};
+    }
+  }
+
+  // Verify PIN function
+  Future<Map<String, dynamic>> verifyPin(String email, String pinCode) async {
+    try {
+      final response =
+          await userApiHelper.post('users/reset-password/verify-pin', {
+        'email': email,
+        'temporalPin': {
+          'code': pinCode,
+        },
+      });
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': true,
+          'message': responseBody['message'] ?? 'PIN verification successful.'
+        };
+      } else {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': false,
+          'message': responseBody['message'] ?? 'Failed to verify PIN.'
+        };
+      }
+    } catch (error) {
+      print("Error during PIN verification: $error");
+      return {'success': false, 'message': 'An error occurred: $error'};
+    }
+  }
+
+  // Create New Password Function
+  Future<Map<String, dynamic>> createNewPassword({
+    required String email,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    if (newPassword != confirmPassword) {
+      return {'success': false, 'message': "Passwords do not match."};
+    }
+
+    try {
+      print(email);
+      print(newPassword);
+      print(confirmPassword);
+
+      final response = await userApiHelper.post(
+        'users/reset-password/create-password',
+        CreatePasswordRequest(
+          email: email,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        ).toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': true,
+          'message': responseBody['message'] ?? 'Password reset successful.'
+        };
+      } else {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': false,
+          'message': responseBody['message'] ?? 'Failed to create new password.'
+        };
+      }
+    } catch (error) {
+      print("Error during createNewPassword: $error");
+      return {'success': false, 'message': 'An error occurred: $error'};
+    }
+  }
 }
