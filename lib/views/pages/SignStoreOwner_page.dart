@@ -434,32 +434,46 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                             final password = _passwordController.text.trim();
                             final confirmPassword =
                                 _confirmPasswordController.text.trim();
-                            final condition = selectedAccessibility ??
-                                'None'; // Use the selected accessibility
+                            final condition = selectedAccessibility ?? 'None';
 
-                            // Await the result from the signup function
-                            final result = await UserController().signup(
-                              username: username,
-                              email: email,
-                              password: password,
-                              confirmPassword: confirmPassword,
-                              role: widget.role,
-                              plan: widget.plan,
-                              condition: condition,
-                            );
-
-                            // Use setState to update the UI with the error or success message
-                            setState(() {
-                              errorMessage = result[
-                                  'message']; // Update errorMessage dynamically
-                            });
-
-                            // Check success status and take appropriate action
-                            if (result['success']) {
-                              // Navigate to another screen or show a success dialog/snackbar
-                              print("Signup successful!");
+                            if (isPaidAccount) {
+                              print("paidd");
+                              // Navigate to the payment details page
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => PaymentDetailsPage(
+                              //       username: username,
+                              //       email: email,
+                              //       password: password,
+                              //       condition: condition,
+                              //       role: widget.role,
+                              //       plan: widget.plan,
+                              //     ),
+                              //   ),
+                              // );
                             } else {
-                              print("Signup failed: ${result['message']}");
+                              // Free account: Proceed with signup
+                              final result = await UserController().signup(
+                                username: username,
+                                email: email,
+                                password: password,
+                                confirmPassword: confirmPassword,
+                                role: widget.role,
+                                plan: widget.plan,
+                                condition: condition,
+                              );
+
+                              // Handle signup result
+                              setState(() {
+                                errorMessage = result['message'];
+                              });
+
+                              if (result['success']) {
+                                print("Signup successful!");
+                              } else {
+                                print("Signup failed: ${result['message']}");
+                              }
                             }
                           }
                         },
