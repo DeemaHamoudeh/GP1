@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firstWelcoming_page.dart';
+import 'login_page.dart';
 
 class InitializationPage extends StatefulWidget {
   const InitializationPage({super.key});
@@ -12,6 +13,7 @@ class InitializationPage extends StatefulWidget {
 class _InitializationPageState extends State<InitializationPage>
     with TickerProviderStateMixin {
   String? _selectedOption;
+  String? _colorBlindType;
 
   @override
   void initState() {
@@ -26,6 +28,94 @@ class _InitializationPageState extends State<InitializationPage>
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_status', status);
     debugPrint("User status saved: $status");
+  }
+
+  Future<void> _saveColorBlindType(String type) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('colorblind_type', type);
+    debugPrint("Colorblind type saved: $type");
+  }
+
+  Future<void> _clearColorBlindType() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('colorblind_type');
+    debugPrint("Colorblind type cleared");
+  }
+
+  void _showColorBlindPopup(StateSetter parentSetState) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Select Colorblind Type",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF00796B),
+            ),
+          ),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ...[
+                      "protanomaly",
+                      "deuteranomaly",
+                      "tritanomaly",
+                      "protanopia",
+                      "deuteranopia",
+                      "tritanopia",
+                      "achromatopsia",
+                      "achromatomaly"
+                    ].map((type) {
+                      return RadioListTile<String>(
+                        title: Text(type),
+                        value: type,
+                        groupValue: _colorBlindType,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _colorBlindType = newValue;
+                          });
+                          parentSetState(() {
+                            _colorBlindType = newValue;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_colorBlindType != null) {
+                  _saveColorBlindType(_colorBlindType!);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please select a colorblind type.")),
+                  );
+                }
+              },
+              child: Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showBottomPopUp() {
@@ -106,13 +196,28 @@ class _InitializationPageState extends State<InitializationPage>
                           // Save the selected option to SharedPreferences
                           await _saveStatus(_selectedOption!);
 
-                          // Navigate to the next page
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FirstWelcomingPage(),
-                            ),
-                          );
+                          // Clear colorblind type if not selected
+                          if (_selectedOption != "colorblind") {
+                            await _clearColorBlindType();
+                          }
+
+                          // Navigate to the next page based on user type
+                          if (['elderly', 'low_vision', 'blind']
+                              .contains(_selectedOption)) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginPage(),
+                              ),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FirstWelcomingPage(),
+                              ),
+                            );
+                          }
                         } else {
                           // Show an alert if no option is selected
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -170,6 +275,11 @@ class _InitializationPageState extends State<InitializationPage>
         onChanged: (String? newValue) {
           setModalState(() {
             _selectedOption = newValue;
+            if (newValue == "colorblind") {
+              _showColorBlindPopup(setModalState);
+            } else {
+              _clearColorBlindType();
+            }
           });
           setState(() {
             _selectedOption = newValue;

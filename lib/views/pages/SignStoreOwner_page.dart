@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
-import 'choosePlan_page.dart';
 
 class SignUpStoreOwnerPage extends StatefulWidget {
   final String role;
@@ -10,7 +9,7 @@ class SignUpStoreOwnerPage extends StatefulWidget {
   const SignUpStoreOwnerPage({
     Key? key,
     required this.role,
-    required this.plan,
+    required this.plan, 
   }) : super(key: key);
 
   @override

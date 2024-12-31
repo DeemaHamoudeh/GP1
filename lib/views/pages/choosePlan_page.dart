@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'SignStoreOwner_page.dart';
 import 'SignUpOwnerElderly_page.dart';
+import 'SignUpOwnerColorBlind_page.dart';
 
 class choosePlanPage extends StatefulWidget {
   final String role;
@@ -14,11 +15,19 @@ class choosePlanPage extends StatefulWidget {
 
 class _choosePlanPageState extends State<choosePlanPage> {
   String? userStatus;
+  String? colorBlindType; 
 
   @override
   void initState() {
     super.initState();
     _loadUserStatus();
+    _loadColorBlindType();
+  }
+    Future<void> _loadColorBlindType() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      colorBlindType = prefs.getString('colorblind_type') ?? 'none';
+    });
   }
 
   Future<void> _loadUserStatus() async {
@@ -29,10 +38,65 @@ class _choosePlanPageState extends State<choosePlanPage> {
     debugPrint("User status loaded: $userStatus");
   }
 
+    ColorFilter _getColorFilter(String? type) {
+    switch (type) {
+      case 'protanomaly': // Reduced sensitivity to red
+        return const ColorFilter.mode(
+          Color(0xFFFFD1DC), // Light pink to enhance red
+          BlendMode.modulate,
+        );
+      case 'deuteranomaly': // Reduced sensitivity to green
+        return const ColorFilter.mode(
+          Color(0xFFDAF7A6), // Light green to enhance green
+          BlendMode.modulate,
+        );
+      case 'tritanomaly': // Reduced sensitivity to blue
+        return const ColorFilter.mode(
+          Color(0xFFA6E3FF), // Light cyan to enhance blue
+          BlendMode.modulate,
+        );
+      case 'protanopia': // Red-blind
+        return const ColorFilter.mode(
+          Color(0xFFFFA07A), // Light salmon to compensate for red blindness
+          BlendMode.modulate,
+        );
+      case 'deuteranopia': // Green-blind
+        return const ColorFilter.mode(
+          Color(0xFF98FB98), // Pale green to compensate for green blindness
+          BlendMode.modulate,
+        );
+      case 'tritanopia': // Blue-blind
+        return const ColorFilter.mode(
+          Color(0xFFADD8E6), // Light blue to compensate for blue blindness
+          BlendMode.modulate,
+        );
+      case 'achromatopsia': // Total color blindness
+        return const ColorFilter.mode(
+          Color(0xFFD3D3D3), // Light gray to provide neutral contrast
+          BlendMode.modulate,
+        );
+      case 'achromatomaly': // Reduced total color sensitivity
+        return const ColorFilter.mode(
+          Color(0xFFEED5D2), // Light beige for better overall contrast
+          BlendMode.modulate,
+        );
+      default:
+        return const ColorFilter.mode(
+          Colors.transparent, // No filter for 'none' or unrecognized type
+          BlendMode.color,
+        );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
+@override
+Widget build(BuildContext context) {
+  final colorFilter = _getColorFilter(colorBlindType);
+
+  return Scaffold(
+    body: ColorFiltered(
+      colorFilter: colorFilter, // Apply the color filter here
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,8 +148,10 @@ class _choosePlanPageState extends State<choosePlanPage> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   void _navigateToNextPage(BuildContext context, {required String plan}) {
     if (userStatus == 'elderly') {
@@ -93,6 +159,16 @@ class _choosePlanPageState extends State<choosePlanPage> {
         context,
         MaterialPageRoute(
           builder: (context) => SignUpStoreOwnerPageElderly(
+            role: widget.role,
+            plan: plan,
+          ),
+        ),
+      );
+    } else if (userStatus == 'colorblind') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpStoreOwnerColorBlindPage(
             role: widget.role,
             plan: plan,
           ),
