@@ -30,9 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+<<<<<<< HEAD
   # color_blindness: ^0.2.0
   color_blindness: ^0.1.2
 
+=======
+  http: ^1.2.2
+>>>>>>> 9b4561b5e169e7bf87c457bcda79ed570ea1d7a4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -83,6 +87,12 @@ flutter:
     - assets/images/logPages/wall1.png
     - assets/images/logPages/wall2.png
     - assets/images/logPages/wall3.png
+    - assets/images/logPages/forgot-password (2).png
+    - assets/images/logPages/letter (1).png
+    - assets/images/logPages/correctPassword.png
+    - assets/images/logPages/check .png
+  
+    
     
 
   #   - images/a_dot_ham.jpeg
