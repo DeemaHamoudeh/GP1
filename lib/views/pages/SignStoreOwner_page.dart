@@ -2,12 +2,8 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
-<<<<<<< HEAD
-=======
-import 'choosePlan_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/userController.dart';
->>>>>>> 9b4561b5e169e7bf87c457bcda79ed570ea1d7a4
 
 class SignUpStoreOwnerPage extends StatefulWidget {
   final String role;
@@ -211,52 +207,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                     ),
 
                     const SizedBox(height: 20),
-<<<<<<< HEAD
-                    _buildTextField(
-                      labelText: "First Name",
-                      icon: Icons.person,
-                      validator: (value) => value!.isEmpty
-                          ? "Please enter your first name"
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Last Name",
-                      icon: Icons.person_outline,
-                      validator: (value) =>
-                          value!.isEmpty ? "Please enter your last name" : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "ُEmail",
-                      icon: Icons.email_outlined,
-                      validator: (value) =>
-                          value!.isEmpty ? "Please enter your Email" : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Password",
-                      icon: Icons.lock_outline,
-                      isPassword: true,
-                      validator: (value) => value!.length < 8
-                          ? "Password must be at least 8 characters"
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Confirm Password",
-                      icon: Icons.lock,
-                      isPassword: true,
-                      validator: (value) => value!.isEmpty
-                          ? "Please confirm your password"
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Date of Birth",
-                      icon: Icons.calendar_today,
-                      keyboardType: TextInputType.datetime,
-=======
+
                     TextFormField(
                       controller: _usernameController,
                       decoration: InputDecoration(
@@ -284,7 +235,6 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                             : null, // Only show error after user interaction
                         // Only show error if field is focused
                       ),
->>>>>>> 9b4561b5e169e7bf87c457bcda79ed570ea1d7a4
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                             RegExp(r'[a-zA-Z0-9_.]')),
