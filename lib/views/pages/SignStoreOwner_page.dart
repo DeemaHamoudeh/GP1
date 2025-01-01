@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
 import 'choosePlan_page.dart';
+import 'payment_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/userController.dart';
 
@@ -438,20 +439,20 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
 
                             if (isPaidAccount) {
                               print("paidd");
-                              // Navigate to the payment details page
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => PaymentDetailsPage(
-                              //       username: username,
-                              //       email: email,
-                              //       password: password,
-                              //       condition: condition,
-                              //       role: widget.role,
-                              //       plan: widget.plan,
-                              //     ),
-                              //   ),
-                              // );
+                              //Navigate to the payment details page
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PaymentPage(
+                                    username: username,
+                                    email: email,
+                                    password: password,
+                                    condition: condition,
+                                    role: widget.role,
+                                    plan: widget.plan,
+                                  ),
+                                ),
+                              );
                             } else {
                               // Free account: Proceed with signup
                               final result = await UserController().signup(
