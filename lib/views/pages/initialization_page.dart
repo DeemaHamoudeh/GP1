@@ -178,12 +178,6 @@ class _InitializationPageState extends State<InitializationPage>
                     setModalState,
                   ),
                   _buildOptionWithState(
-                    "I am blind",
-                    "assets/images/welcomingPages/hidden.png",
-                    "blind",
-                    setModalState,
-                  ),
-                  _buildOptionWithState(
                     "I don’t have any accessibility needs",
                     "assets/images/welcomingPages/check.png",
                     "none",
@@ -202,7 +196,7 @@ class _InitializationPageState extends State<InitializationPage>
                           }
 
                           // Navigate to the next page based on user type
-                          if (['elderly', 'low_vision', 'blind']
+                          if (['elderly', 'low_vision']
                               .contains(_selectedOption)) {
                             Navigator.pushReplacement(
                               context,

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'SignStoreOwner_page.dart';
 import 'SignUpOwnerElderly_page.dart';
 import 'SignUpOwnerColorBlind_page.dart';
+import 'SignUpOwnerBlind_page.dart';
 
 class choosePlanPage extends StatefulWidget {
   final String role;
@@ -169,6 +170,17 @@ Widget build(BuildContext context) {
         context,
         MaterialPageRoute(
           builder: (context) => SignUpStoreOwnerColorBlindPage(
+            role: widget.role,
+            plan: plan,
+          ),
+        ),
+      );
+    } 
+    else if (userStatus == 'low_vision') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignUpOwnerBlindPage(
             role: widget.role,
             plan: plan,
           ),

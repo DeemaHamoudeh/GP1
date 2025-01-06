@@ -370,50 +370,50 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                     ),
                     const SizedBox(height: 20),
                     // Accessibility Dropdown
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'Accessibility Status',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        prefixIcon: Icon(
-                          Icons.accessibility,
-                          color: AppColors.basicBackgroundColor,
-                          size: 24,
-                        ),
-                      ),
-                      value: selectedAccessibility,
-                      items: [
-                        'Colorblind',
-                        'Blind',
-                        'Low Vision',
-                        'Elderly',
-                        'None',
-                      ].map((String accessibility) {
-                        return DropdownMenuItem<String>(
-                          value: accessibility,
-                          child: Text(accessibility),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedAccessibility = value;
-                          // Save the selected value to SharedPreferences
-                          SharedPreferences.getInstance().then((prefs) {
-                            prefs.setString(
-                                'accessibilityStatus', value ?? 'None');
-                          });
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select your accessibility status';
-                        }
-                        return null;
-                      },
-                    ),
+                    // DropdownButtonFormField<String>(
+                    //   decoration: InputDecoration(
+                    //     labelText: 'Accessibility Status',
+                    //     filled: true,
+                    //     fillColor: Colors.white,
+                    //     border: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(20),
+                    //     ),
+                    //     prefixIcon: Icon(
+                    //       Icons.accessibility,
+                    //       color: AppColors.basicBackgroundColor,
+                    //       size: 24,
+                    //     ),
+                    //   ),
+                    //   value: selectedAccessibility,
+                    //   items: [
+                    //     'Colorblind',
+                    //     'Blind',
+                    //     'Low Vision',
+                    //     'Elderly',
+                    //     'None',
+                    //   ].map((String accessibility) {
+                    //     return DropdownMenuItem<String>(
+                    //       value: accessibility,
+                    //       child: Text(accessibility),
+                    //     );
+                    //   }).toList(),
+                    //   onChanged: (value) {
+                    //     setState(() {
+                    //       selectedAccessibility = value;
+                    //       // Save the selected value to SharedPreferences
+                    //       SharedPreferences.getInstance().then((prefs) {
+                    //         prefs.setString(
+                    //             'accessibilityStatus', value ?? 'None');
+                    //       });
+                    //     });
+                    //   },
+                    //   validator: (value) {
+                    //     if (value == null || value.isEmpty) {
+                    //       return 'Please select your accessibility status';
+                    //     }
+                    //     return null;
+                    //   },
+                    // ),
                     if (errorMessage.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 0.0),
