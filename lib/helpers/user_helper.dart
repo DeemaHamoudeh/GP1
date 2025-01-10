@@ -14,4 +14,13 @@ class userApiHelper {
       body: json.encode(body),
     );
   }
+
+  // Static method for GET requests
+  static Future<http.Response> get(String endpoint) async {
+    final url = Uri.parse('$baseUrl/$endpoint');
+    return await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+  }
 }

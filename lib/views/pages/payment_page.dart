@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/controllers/userController.dart';
 
 class PaymentPage extends StatefulWidget {
   final String username;
   final String email;
   final String password;
+  final String confirmPassword;
   final String condition;
   final String role;
   final String plan;
@@ -13,6 +15,7 @@ class PaymentPage extends StatefulWidget {
     required this.username,
     required this.email,
     required this.password,
+    required this.confirmPassword,
     required this.condition,
     required this.role,
     required this.plan,
@@ -24,8 +27,8 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   String _selectedOption = ""; // Tracks selected payment method
+  final TextEditingController _emailController = TextEditingController();
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +37,6 @@ class _PaymentPageState extends State<PaymentPage> {
         child: Container(),
       ),
       body: SingleChildScrollView(
-        // Wrap the Column with SingleChildScrollView
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -54,7 +56,6 @@ class _PaymentPageState extends State<PaymentPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // Step 1 - Personal Details
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -65,12 +66,13 @@ class _PaymentPageState extends State<PaymentPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 5.0),
-                        child: Text("Personal Details",
-                            style: TextStyle(fontSize: 14)),
+                        child: Text(
+                          "Personal Details",
+                          style: TextStyle(fontSize: 14),
+                        ),
                       ),
                     ],
                   ),
-                  // Line between circles
                   Expanded(
                     child: Align(
                       alignment: Alignment.center,
@@ -80,7 +82,6 @@ class _PaymentPageState extends State<PaymentPage> {
                       ),
                     ),
                   ),
-                  // Step 2 - Payment Details
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -91,8 +92,10 @@ class _PaymentPageState extends State<PaymentPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 5.0),
-                        child: Text("Payment Details",
-                            style: TextStyle(fontSize: 14)),
+                        child: Text(
+                          "Payment Details",
+                          style: TextStyle(fontSize: 14),
+                        ),
                       ),
                     ],
                   ),
@@ -185,7 +188,6 @@ class _PaymentPageState extends State<PaymentPage> {
               ],
             ),
             SizedBox(height: 50),
-            // Conditional Forms
             if (_selectedOption == "PayPal") _buildPayPalForm(),
             if (_selectedOption == "CreditCard") _buildCreditCardForm(),
           ],
@@ -194,21 +196,22 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  // PayPal Form Widget
-  // PayPal Form Widget
   Widget _buildPayPalForm() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("PayPal Payment",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[700])),
+          Text(
+            "PayPal Payment",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700]),
+          ),
           SizedBox(height: 10),
           TextField(
+            controller: _emailController,
             decoration: InputDecoration(
               labelText: "PayPal Email",
               labelStyle: TextStyle(color: Colors.grey[700]),
@@ -226,23 +229,42 @@ class _PaymentPageState extends State<PaymentPage> {
           ),
           SizedBox(height: 30),
           Center(
-            // Center the button
             child: ElevatedButton(
-              onPressed: () {
-                // Handle PayPal payment logic
+              onPressed: () async {
+                final result = await UserController().signup(
+                  username: widget.username,
+                  email: widget.email,
+                  password: widget.password,
+                  confirmPassword: widget.confirmPassword,
+                  role: widget.role,
+                  plan: widget.plan,
+                  condition: widget.condition,
+                  paymentMethod: "PayPal",
+                  paypalEmail: _emailController.text,
+                );
+
+                if (!result['success']) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(result['message'] ?? "Payment failed."),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Background color
-                minimumSize: Size(double.infinity, 50), // Full width button
+                backgroundColor: Colors.teal,
+                minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20), // No border radius
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: Text("Pay Now",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
+              child: Text(
+                "Pay Now",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -250,18 +272,19 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-// Credit Card Form Widget
   Widget _buildCreditCardForm() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Credit Card details:",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.bold)),
+          Text(
+            "Credit Card details:",
+            style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey[700],
+                fontWeight: FontWeight.bold),
+          ),
           SizedBox(height: 10),
           TextField(
             decoration: InputDecoration(
@@ -325,23 +348,24 @@ class _PaymentPageState extends State<PaymentPage> {
           ),
           SizedBox(height: 30),
           Center(
-            // Center the button
             child: ElevatedButton(
               onPressed: () {
                 // Handle Credit Card payment logic
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Background color
-                minimumSize: Size(double.infinity, 50), // Full width button
+                backgroundColor: Colors.teal,
+                minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20), // No border radius
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: Text("Pay Now",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
+              child: Text(
+                "Pay Now",
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],

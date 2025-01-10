@@ -4,6 +4,7 @@ import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatte
 import 'package:frontend/constants/colors.dart';
 import 'choosePlan_page.dart';
 import 'payment_page.dart';
+import 'dashBoardStoreOwner_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/userController.dart';
 
@@ -447,6 +448,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                                     username: username,
                                     email: email,
                                     password: password,
+                                    confirmPassword: confirmPassword,
                                     condition: condition,
                                     role: widget.role,
                                     plan: widget.plan,
@@ -471,7 +473,19 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                               });
 
                               if (result['success']) {
+                                print("hoo");
                                 print("Signup successful!");
+                                // navigate
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DashboardStoreOwnerPage(
+                                            token: result['token']),
+                                  ),
+                                );
+                                print("replace");
                               } else {
                                 print("Signup failed: ${result['message']}");
                               }

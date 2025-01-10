@@ -1,6 +1,8 @@
 import '../helpers/user_helper.dart';
 import '../models/userModel.dart';
 import 'dart:convert'; // Add this to use json.decode
+import 'package:url_launcher/url_launcher.dart';
+import 'package:uni_links/uni_links.dart';
 
 class UserController {
   // Login Function
@@ -12,9 +14,12 @@ class UserController {
       });
 
       if (response.statusCode == 200) {
+        final responseBody =
+            json.decode(response.body); // Parse the response body
         return {
           'success': true,
           'message': 'Login successful!',
+          'token': responseBody['token'], // Include the token in the response
         };
       } else {
         return {
@@ -31,15 +36,27 @@ class UserController {
     }
   }
 
-  // Signup Function
+  String? extractToken(String responseBody) {
+    try {
+      final decodedBody = json.decode(responseBody);
+      return decodedBody['token'];
+    } catch (e) {
+      print("Error extracting token: $e");
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>> signup({
     required String username,
     required String email,
     required String password,
     required String confirmPassword,
     String? role,
-    String? plan,
+    required String plan,
     String? condition,
+    String? paymentMethod,
+    Map<String, dynamic>? paymentDetails,
+    String? paypalEmail,
   }) async {
     if (username.isEmpty ||
         email.isEmpty ||
@@ -52,37 +69,122 @@ class UserController {
       return {'success': false, 'message': "Passwords do not match."};
     }
 
-    UserModel user = UserModel(
-      username: username,
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword,
-      role: role,
-      plan: plan,
-      condition: condition,
-    );
-
     try {
-      final response = await userApiHelper.post(
-        'users/signup',
-        user.toJson(forSignup: true),
-      );
+      if (plan.toLowerCase() == "basic") {
+        print("Handling free plan signup");
+        final response = await userApiHelper.post(
+          'users/signup',
+          {
+            'username': username,
+            'email': email,
+            'password': password,
+            'confirmPassword': confirmPassword,
+            'role': role,
+            'plan': plan,
+            'condition': condition,
+          },
+        );
 
-      if (response.statusCode == 201) {
-        // Assuming 201 means success
-        return {'success': true, 'message': "Signup successful!"};
-      } else {
-        // Handle error responses
-        final responseBody = json.decode(response.body);
-        return {
-          'success': false,
-          'message': responseBody['message'] ?? "Signup failed."
-        };
+        if (response.statusCode == 201) {
+          final responseBody = json.decode(response.body);
+          return {
+            'success': true,
+            'message': responseBody['message'] ?? "Signup successful!",
+            'token': responseBody['token'],
+          };
+        } else {
+          final responseBody = json.decode(response.body);
+          return {
+            'success': false,
+            'message': responseBody['message'] ?? "Signup failed."
+          };
+        }
       }
+
+      if (plan.toLowerCase() == "premium" && paymentMethod == "PayPal") {
+        print("Handling premium plan with PayPal payment");
+        final response = await userApiHelper.post(
+          'users/signup',
+          {
+            'username': username,
+            'email': email,
+            'password': password,
+            'confirmPassword': confirmPassword,
+            'role': role,
+            'plan': plan,
+            'condition': condition,
+            'paymentMethod': paymentMethod,
+            'paypalEmail': paypalEmail,
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final responseBody = json.decode(response.body);
+          final approvalUrl = responseBody['approvalUrl'];
+
+          if (approvalUrl != null && approvalUrl.isNotEmpty) {
+            print("Launching PayPal URL: $approvalUrl");
+            final redirectedUrl =
+                await monitorPayPalRedirect(Uri.parse(approvalUrl));
+
+            if (redirectedUrl == null || redirectedUrl.isEmpty) {
+              return {'success': false, 'message': "Payment not completed."};
+            }
+
+            // No need to call the capture endpoint here, as it's handled in `main.dart`.
+            return {'success': true, 'message': "Payment redirection handled."};
+          } else {
+            return {'success': false, 'message': "Approval URL is missing."};
+          }
+        } else {
+          final responseBody = json.decode(response.body);
+          return {
+            'success': false,
+            'message': responseBody['message'] ?? "Signup failed."
+          };
+        }
+      }
+
+      return {'success': false, 'message': "Invalid plan or payment method."};
     } catch (error) {
-      // Handle unexpected errors
+      print("Error during signup: $error");
       return {'success': false, 'message': "An error occurred: $error"};
     }
+  }
+
+  Future<String?> monitorPayPalRedirect(Uri approvalUrl) async {
+    try {
+      if (await canLaunchUrl(approvalUrl)) {
+        await launchUrl(approvalUrl, mode: LaunchMode.externalApplication);
+        print("PayPal approval URL launched: $approvalUrl");
+
+        // Capture deep link directly
+        final String? initialLink = await getInitialLink();
+        print("Initial link captured: $initialLink");
+
+        if (initialLink != null) {
+          final Uri redirectedUri = Uri.parse(initialLink);
+
+          // Return the URI as a string
+          return redirectedUri.toString();
+        }
+
+        // If initial link is null, fall back to listening on uriLinkStream
+        final Uri? result = await uriLinkStream
+            .firstWhere((link) => link != null, orElse: () => null);
+        print("Stream captured redirected URL: $result");
+
+        if (result != null) {
+          return result.toString();
+        }
+      } else {
+        print("Unable to launch PayPal approval URL.");
+      }
+    } catch (e) {
+      print("Error in monitorPayPalRedirect: $e");
+    }
+
+    return null; // Default case for failure
   }
 
   // Send Email Function for Password Reset

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'role_selection_page.dart';
 import 'forgetPassword_page.dart';
 import '../../../controllers/userController.dart';
+import 'dashBoardStoreOwner_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -205,6 +206,13 @@ class _LoginPageState extends State<LoginPage> {
                             // Optionally, navigate or do something based on the result
                             if (result['success']) {
                               print("Login successful!");
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DashboardStoreOwnerPage(
+                                      token: result['token']),
+                                ),
+                              );
                               // Navigate to another screen or show a success dialog/snackbar
                             } else {
                               print("Login failed: ${result['message']}");

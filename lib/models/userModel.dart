@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 // UserModel class
+import 'dart:convert';
+
+// UserModel class
 class UserModel {
   final String? username;
   final String? email;
@@ -11,6 +14,11 @@ class UserModel {
   final String? plan;
   final String? condition;
   final TemporalPin? temporalPin;
+  final String? accountType; // Generalized account type
+  final String? paymentMethod; // Generalized payment method
+  final Map<String, dynamic>?
+      paymentDetails; // Payment details, dynamic for flexibility
+  String? paypalEmail;
 
   UserModel({
     this.username,
@@ -22,6 +30,10 @@ class UserModel {
     this.plan,
     this.condition,
     this.temporalPin,
+    this.accountType,
+    this.paymentMethod,
+    this.paymentDetails,
+    this.paypalEmail,
   });
 
   // Method to update password
@@ -31,8 +43,8 @@ class UserModel {
 
   // Convert UserModel to JSON for API requests
   Map<String, dynamic> toJson({bool forSignup = false}) {
-    if (forSignup) {
-      return {
+    final data = {
+      if (forSignup) ...{
         'username': username,
         'email': email,
         'password': password,
@@ -40,13 +52,18 @@ class UserModel {
         'role': role,
         'plan': plan,
         'condition': condition,
-      };
-    } else {
-      return {
+      } else ...{
         'identifier': identifier,
         'password': password,
-      };
+      },
+      'accountType': accountType,
+      'paymentMethod': paymentMethod,
+      'paymentDetails': paymentDetails,
+    };
+    if (paypalEmail != null) {
+      data['paypalEmail'] = paypalEmail; // Include PayPal email
     }
+    return data;
   }
 
   // Create UserModel from JSON response
@@ -60,8 +77,25 @@ class UserModel {
       role: json['role'],
       plan: json['plan'],
       condition: json['condition'],
+      accountType: json['accountType'],
+      paymentMethod: json['paymentMethod'],
+      paymentDetails: json['paymentDetails'] != null
+          ? Map<String, dynamic>.from(json['paymentDetails'])
+          : null,
     );
   }
+}
+
+// TemporalPin class for verification
+class TemporalPin {
+  String code;
+
+  TemporalPin({required this.code});
+
+  factory TemporalPin.fromJson(Map<String, dynamic> json) =>
+      TemporalPin(code: json["code"]);
+
+  Map<String, dynamic> toJson() => {"code": code};
 }
 
 // Reset Email Request
@@ -107,18 +141,6 @@ class VerifyPinRequest {
       };
 }
 
-// TemporalPin class for verification
-class TemporalPin {
-  String code;
-
-  TemporalPin({required this.code});
-
-  factory TemporalPin.fromJson(Map<String, dynamic> json) =>
-      TemporalPin(code: json["code"]);
-
-  Map<String, dynamic> toJson() => {"code": code};
-}
-
 // Verify Pin Response
 class VerifyPinResponse {
   String message;
@@ -131,6 +153,7 @@ class VerifyPinResponse {
   Map<String, dynamic> toJson() => {"message": message};
 }
 
+// Create Password Request
 class CreatePasswordRequest {
   String email;
   String newPassword;
@@ -156,6 +179,7 @@ class CreatePasswordRequest {
       };
 }
 
+// Create Password Response
 class CreatePasswordResponse {
   String message;
 

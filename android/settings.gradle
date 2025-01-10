@@ -22,4 +22,15 @@ plugins {
     id "org.jetbrains.kotlin.android" version "1.8.22" apply false
 }
 
+// Add Flutter's build output
+def flutterProjectRoot = rootProject.projectDir.parentFile.toPath()
+
 include ":app"
+
+// Check if the .dart_tool/flutter_build_plugins exists before including it
+def flutterBuildPlugins = new File("${flutterProjectRoot}/.dart_tool/flutter_build_plugins")
+if (flutterBuildPlugins.exists()) {
+    includeBuild(flutterBuildPlugins) {
+        name = "flutter_plugins"
+    }
+}
