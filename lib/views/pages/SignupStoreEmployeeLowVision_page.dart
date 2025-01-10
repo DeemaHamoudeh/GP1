@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'jobPosts_page.dart';
 
-class SignUpOwnerBlindPage extends StatefulWidget {
-  final String plan;
-  final String role;
-
-  const SignUpOwnerBlindPage({required this.plan, required this.role, Key? key})
+class SignUpStoreEmployeeBlindPage extends StatefulWidget {
+  const SignUpStoreEmployeeBlindPage({ Key? key})
       : super(key: key);
 
   @override
-  State<SignUpOwnerBlindPage> createState() => _SignUpOwnerBlindPageState();
+  State<SignUpStoreEmployeeBlindPage> createState() => _SignUpStoreEmployeeBlindPageState();
 }
 
-class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
+class _SignUpStoreEmployeeBlindPageState extends State<SignUpStoreEmployeeBlindPage> {
   final _formKey = GlobalKey<FormState>();
   final _firstnameController = TextEditingController();
   final _lastnameController = TextEditingController();
@@ -22,7 +20,7 @@ class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool isPaidAccount = false;
+  final TextEditingController _coverLetterController = TextEditingController();
 
   late FlutterTts _flutterTts;
   late stt.SpeechToText _speechToText;
@@ -31,9 +29,29 @@ class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
   @override
   void initState() {
     super.initState();
-    isPaidAccount = widget.plan.toLowerCase() == "premium";
     _flutterTts = FlutterTts();
     _speechToText = stt.SpeechToText();
+  }
+    void _showConfirmationMessage() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: const Text(
+          "Your information has been submitted successfully!",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
+    );
+
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.pop(context); // Close the confirmation message
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const JobPostsPage()),
+      );
+    });
   }
 
   @override
@@ -182,7 +200,7 @@ class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      "Sign up as Store Owner (${widget.plan})",
+                      "Sign up as Store Store Employee",
                       style: const TextStyle(
                         fontSize: 24, // Larger subtitle font size
                         color: Colors.grey,
@@ -222,12 +240,30 @@ class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
                       controller: _confirmPasswordController,
                       isPassword: true,
                     ),
+                    const Text(
+                      "Cover Letter",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _coverLetterController,
+                      maxLines: 6,
+                      decoration: InputDecoration(
+                        hintText: "Write your cover letter here...",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      validator: (value) => value!.isEmpty
+                          ? "Please write a cover letter"
+                          : null,
+                    ),
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            // Form submission logic
-                          }
+                          if (_formKey.currentState!.validate()) {
+                            _showConfirmationMessage();
+                            }
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
@@ -242,14 +278,7 @@ class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
                           children: [
                             Icon(Icons.check_circle, color: Colors.white, size: 28),
                             const SizedBox(width: 10),
-                            Text(
-                              isPaidAccount ? "Next" : "Submit",
-                              style: TextStyle(
-                                fontSize: 24, // Larger button font size
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            Text("Submit"),
                           ],
                         ),
                       ),

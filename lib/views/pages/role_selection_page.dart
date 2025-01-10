@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'choosePlan_page.dart';
+import 'SignUpStoreEmployeeElderly_page.dart';
+import 'SignUpStoreEmployeecolorblind_Normal_page.dart ';
+import 'SignupStoreEmployeeLowVision_page.dart';
 
 class RoleSelectionPage extends StatefulWidget {
   const RoleSelectionPage({Key? key}) : super(key: key);
@@ -12,11 +15,13 @@ class RoleSelectionPage extends StatefulWidget {
 class _RoleSelectionPageState extends State<RoleSelectionPage> {
   String selectedRole = "";
   String? colorBlindType; 
+  String? userStatus;
 
   @override
   void initState() {
     super.initState();
     _loadColorBlindType(); 
+    _loadUserStatus();
   }
 
   Future<void> _loadColorBlindType() async { 
@@ -24,6 +29,14 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
     setState(() {
       colorBlindType = prefs.getString('colorblind_type') ?? 'none';
     });
+  }
+
+    Future<void> _loadUserStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userStatus = prefs.getString('user_status') ?? 'none';
+    });
+    debugPrint("User status loaded: $userStatus");
   } 
 
   ColorFilter _getColorFilter(String? type) { 
@@ -209,6 +222,45 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                   choosePlanPage(role: selectedRole),
                             ),
                           );
+                        } else if (selectedRole == "Store Employee") {
+                          if (userStatus == 'elderly') { // Sign up for Store Employee Elderly user
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SignUpStoreEmployeeElderlyPage(),
+                              ),
+                            );  
+                          } else if (userStatus == 'colorblind' || userStatus == 'none') { // Sign up for Store Employee normal or colorblind user
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SignUpStoreStoreEmployeeColorBlindNormalPage(),
+                              ),
+                            );  
+                          } else if (userStatus == 'low_vision') { // Sign up for Store Employee Elderly user
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SignUpStoreEmployeeBlindPage(),
+                              ),
+                            );  
+                          }
+                          // Sign up for Store Employee low vision user
+
+
+                        } else if (selectedRole == "Staff") {
+                          // Sign up for Staff Elderly user
+
+                          // Sign up for Staff normal or colorblind user
+
+                        } else if (selectedRole == "Customer") {
+                          // Sign up for Customer Elderly user
+
+                          // Sign up for Customer normal or colorblind user
+
                         }
                       }
                     : null,
