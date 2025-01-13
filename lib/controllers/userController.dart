@@ -3,9 +3,11 @@ import '../models/userModel.dart';
 import 'dart:convert'; // Add this to use json.decode
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserController {
   // Login Function
+
   Future<Map<String, dynamic>> login(String identifier, String password) async {
     try {
       final response = await userApiHelper.post('users/login', {
@@ -14,12 +16,16 @@ class UserController {
       });
 
       if (response.statusCode == 200) {
-        final responseBody =
-            json.decode(response.body); // Parse the response body
+        final responseBody = json.decode(response.body);
+
+        // Save the token in SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', responseBody['token']);
+
         return {
           'success': true,
           'message': 'Login successful!',
-          'token': responseBody['token'], // Include the token in the response
+          'token': responseBody['token'],
         };
       } else {
         return {
@@ -87,6 +93,11 @@ class UserController {
 
         if (response.statusCode == 201) {
           final responseBody = json.decode(response.body);
+
+          // Save the token in SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', responseBody['token']);
+
           return {
             'success': true,
             'message': responseBody['message'] ?? "Signup successful!",
@@ -279,6 +290,97 @@ class UserController {
       }
     } catch (error) {
       print("Error during createNewPassword: $error");
+      return {'success': false, 'message': 'An error occurred: $error'};
+    }
+  }
+
+// Fetch User Info Function
+  Future<Map<String, dynamic>> fetchUserInfo(String token) async {
+    try {
+      final response = await userApiHelper.get(
+        'users/dashBoard/user-info', // Endpoint for fetching user info
+        headers: {
+          'Authorization': 'Bearer $token', // Pass the token in headers
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': true,
+          'data': responseBody['data'], // User information
+        };
+      } else {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': false,
+          'message': responseBody['message'] ?? 'Failed to fetch user info.',
+        };
+      }
+    } catch (error) {
+      print("Error fetching user info: $error");
+      return {'success': false, 'message': 'An error occurred: $error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchSetupGuide(String token) async {
+    try {
+      final response = await userApiHelper.get(
+        'users/dashBoard/setup-guide',
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': true,
+          'data': responseBody['data'], // List of steps
+        };
+      } else {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': false,
+          'message': responseBody['message'] ?? 'Failed to fetch setup guide.',
+        };
+      }
+    } catch (error) {
+      print("Error fetching setup guide: $error");
+      return {'success': false, 'message': 'An error occurred: $error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> updateSetupGuide(
+      String token, int stepId, bool isCompleted) async {
+    try {
+      final response = await userApiHelper.put(
+        'users/dashboard/setup-guide/$stepId',
+        {'isCompleted': isCompleted},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': true,
+          'data': responseBody['data'],
+          'message': responseBody['message'],
+        };
+      } else {
+        final responseBody = json.decode(response.body);
+        return {
+          'success': false,
+          'message': responseBody['message'] ?? 'Failed to update setup guide.',
+        };
+      }
+    } catch (error) {
+      print("Error updating setup guide: $error");
       return {'success': false, 'message': 'An error occurred: $error'};
     }
   }

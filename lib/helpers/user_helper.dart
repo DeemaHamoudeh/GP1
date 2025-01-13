@@ -15,12 +15,30 @@ class userApiHelper {
     );
   }
 
-  // Static method for GET requests
-  static Future<http.Response> get(String endpoint) async {
+  // Static method for GET requests with optional headers
+  static Future<http.Response> get(String endpoint,
+      {Map<String, String>? headers}) async {
     final url = Uri.parse('$baseUrl/$endpoint');
     return await http.get(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        ...?headers, // Add custom headers if provided
+      },
+    );
+  }
+
+  // Static method for PUT requests with optional headers
+  static Future<http.Response> put(String endpoint, Map<String, dynamic> body,
+      {Map<String, String>? headers}) async {
+    final url = Uri.parse('$baseUrl/$endpoint');
+    return await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        ...?headers, // Add custom headers if provided
+      },
+      body: json.encode(body), // Encode the body as JSON
     );
   }
 }
