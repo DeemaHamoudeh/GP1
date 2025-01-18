@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/views/pages/dashBoardStoreOwner_page.dart';
+import 'package:frontend/views/pages/StoreOwner/dashBoardStoreOwner_page.dart';
 import 'package:frontend/views/pages/payment_page.dart';
 import 'package:frontend/views/pages/initialization_page.dart';
 import 'package:uni_links/uni_links.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatte
 import 'package:frontend/constants/colors.dart';
 import 'choosePlan_page.dart';
 import 'payment_page.dart';
-import 'dashBoardStoreOwner_page.dart';
+import 'StoreOwner/dashBoardStoreOwner_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/userController.dart';
 

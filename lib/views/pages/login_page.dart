@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'role_selection_page.dart';
 import 'forgetPassword_page.dart';
 import '../../../controllers/userController.dart';
-import 'dashBoardStoreOwner_page.dart';
+import 'StoreOwner/dashBoardStoreOwner_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -179,45 +180,48 @@ class _LoginPageState extends State<LoginPage> {
                       ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState?.validate() ?? false) {
-                            // Collect form data
+                            print("yess");
                             final identifier =
                                 _identifierController.text.trim();
                             final password = _passwordController.text.trim();
-                            print("Lo");
-                            // Call the login function in UserController
+
                             final result = await UserController()
                                 .login(identifier, password);
 
                             setState(() {
-                              // Check if it's an incorrect username or email
                               if (result['message']
                                   .contains('User not found')) {
-                                // If the message indicates the user wasn't found
+                                print("User not found");
                                 errorMessage = identifier.contains('@')
                                     ? 'Incorrect email or password'
                                     : 'Incorrect username or password';
                               } else {
+                                print("Login failed");
                                 errorMessage =
                                     result['message'] ?? 'Login failed';
                               }
                             });
-                            print("Login");
 
-                            // Optionally, navigate or do something based on the result
                             if (result['success']) {
                               print("Login successful!");
+                              // Debugging log to verify token retrieval
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              print('Saved token: ${prefs.getString('token')}');
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DashboardStoreOwnerPage(
-                                      token: result['token']),
+                                    token: result['token'],
+                                  ),
                                 ),
                               );
-                              // Navigate to another screen or show a success dialog/snackbar
                             } else {
                               print("Login failed: ${result['message']}");
                             }
                           }
+                          print("nooo");
                         },
                         style: ElevatedButton.styleFrom(
                           fixedSize: const Size(150, 50),
@@ -231,6 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                       ),
+
                       const SizedBox(height: 20),
 
                       // Sign Up Text

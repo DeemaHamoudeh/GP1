@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dashBoardStoreOwner_page.dart'; // Import the dashboard page
+import 'StoreOwner/dashBoardStoreOwner_page.dart'; // Import the dashboard page
+import 'firstWelcoming_page.dart';
 import 'login_page.dart'; // Import the login page
 
 class InitializationPage extends StatefulWidget {
@@ -18,29 +19,40 @@ class _InitializationPageState extends State<InitializationPage> {
   }
 
   Future<void> _initializeApp() async {
-    // Delay to ensure the splash screen is visible for 3 seconds
+    // تأخير الشاشة الافتتاحية لمدة 3 ثوانٍ
     await Future.delayed(const Duration(seconds: 3));
 
-    // Check for token and navigate accordingly
+    // الحصول على SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
 
-    if (token != null && token.isNotEmpty) {
-      // Navigate to the dashboard if token exists
+    // التحقق إذا كان التطبيق يفتح لأول مرة
+    bool? isFirstTime = prefs.getBool('isFirstTime') ?? true;
+
+    if (isFirstTime) {
+      // إذا كانت هذه أول مرة
+      await prefs.setBool(
+          'isFirstTime', false); // تعيينه إلى false بعد الدخول لأول مرة
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => DashboardStoreOwnerPage(token: token),
-        ),
+        MaterialPageRoute(builder: (context) => FirstWelcomingPage()),
       );
     } else {
-      // Navigate to the login page if no token
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
+      // التحقق إذا كان هناك توكين (token) للدخول إلى الداشبورد مباشرة
+      String? token = prefs.getString('token');
+      if (token != null && token.isNotEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardStoreOwnerPage(token: token),
+          ),
+        );
+      } else {
+        // إذا لم يكن هناك توكين، توجيهه إلى صفحة تسجيل الدخول
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      }
     }
   }
 

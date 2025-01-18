@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert'; // For JSON decoding
 import 'package:http/http.dart' as http; // For making HTTP requests
-import '../../../controllers/userController.dart'; // Import UserController
-import 'login_page.dart'; // Import the login page
+import '../../../../controllers/userController.dart'; // Import UserController
+import '../login_page.dart'; // Import the login page
+import 'storeDetails_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardStoreOwnerPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class DashboardStoreOwnerPage extends StatefulWidget {
 }
 
 class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
+  String? token;
   String? userName; // Placeholder for the user's name
   bool isLoading = true; // To show loading indicator while fetching data
   String baseUrl =
@@ -38,31 +40,49 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
   @override
   void initState() {
     super.initState();
+    token = widget.token;
     print("Received Token: ${widget.token}");
     _fetchUserInfo(); // Fetch the user's name during initialization
     _fetchSetupGuide();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchSetupGuide();
+    });
   }
 
   Future<void> _fetchSetupGuide() async {
-    if (widget.token == null || widget.token!.isEmpty) {
-      print("Error: Token is null or empty.");
+    print("🛠️ Entering _fetchSetupGuide()");
+    if (token == null || token!.isEmpty) {
+      print("❌ Error: Token is null or empty.");
       return;
     }
+
     try {
+      print("🔑 Using token: $token");
       final userController = UserController();
-      final result = await userController.fetchSetupGuide(widget.token!);
+      final result = await userController.fetchSetupGuide(token!);
 
       if (result['success']) {
-        print("Setup Guide fetched successfully.");
+        print("✅ Setup Guide fetched successfully.");
         setState(() {
-          steps = List<Map<String, dynamic>>.from(
-              result['data']); // Explicitly cast the response
+          steps = List<Map<String, dynamic>>.from(result['data']);
         });
+
+        // ✅ Check SharedPreferences for step completion
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        bool isStoreNameAdded = prefs.getBool("store_name_added") ?? false;
+        print("📌 SharedPreferences - store_name_added: $isStoreNameAdded");
+
+        if (isStoreNameAdded) {
+          setState(() {
+            print("✅ Step 1 marked as completed");
+            steps[0]["isCompleted"] = true;
+          });
+        }
       } else {
-        print('Failed to fetch setup guide: ${result['message']}');
+        print('❌ Failed to fetch setup guide: ${result['message']}');
       }
     } catch (error) {
-      print("Error fetching setup guide: $error");
+      print("❌ Error fetching setup guide: $error");
     }
   }
 
@@ -112,6 +132,7 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
   Future<void> _logoutUser() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token'); // Remove the token
+    await prefs.setBool('isFirstTime', true);
     print("User logged out: Token removed from SharedPreferences");
   }
 
@@ -210,7 +231,35 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
               ),
               childrenPadding: EdgeInsets.only(left: 50.0),
               children: [
-                _buildSubMenuItem('Store Details', context),
+                ListTile(
+                  title: Text(
+                    'Store Details',
+                    style: TextStyle(color: Colors.white70, fontSize: 18),
+                  ), // Close the drawer
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => StoreDetailsPage(token: token)),
+                    );
+
+                    if (result != null) {
+                      print("🔄 Returning to Dashboard, result: $result");
+
+                      setState(() {
+                        if (result is String) {
+                          token = result; // ✅ Update token
+                        }
+                      });
+
+                      _fetchSetupGuide(); // ✅ Reload setup guide
+                    } else {
+                      print(
+                          "⚠️ No result returned, _fetchSetupGuide() will not be called.");
+                    }
+                  },
+                ),
                 _buildSubMenuItem('Payment', context),
                 _buildSubMenuItem('Checkout', context),
                 _buildSubMenuItem('Shipping and Delivery', context),
@@ -469,39 +518,30 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                     trailing: Icon(Icons.arrow_forward,
                                         color: Colors.teal),
                                     onTap: () async {
-                                      bool currentStatus =
-                                          entry.value["isCompleted"];
-                                      int stepId = entry.value["stepId"];
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                StoreDetailsPage(
+                                                    token: widget.token)),
+                                      );
 
-                                      setState(() {
-                                        entry.value["isCompleted"] =
-                                            !currentStatus;
-                                      });
-
-                                      try {
-                                        final userController = UserController();
-                                        final result = await userController
-                                            .updateSetupGuide(
-                                          widget.token!,
-                                          stepId,
-                                          !currentStatus,
-                                        );
-
-                                        if (!result['success']) {
-                                          setState(() {
-                                            entry.value["isCompleted"] =
-                                                currentStatus;
-                                          });
-                                          print(
-                                              'Failed to update setup guide: ${result['message']}');
-                                        }
-                                      } catch (error) {
-                                        setState(() {
-                                          entry.value["isCompleted"] =
-                                              currentStatus;
-                                        });
+                                      // ✅ Ensure we receive a valid token or flag to reload
+                                      if (result != null) {
                                         print(
-                                            "Error updating setup guide: $error");
+                                            "🔄 Returning to Dashboard, result: $result");
+
+                                        setState(() {
+                                          if (result is String) {
+                                            token =
+                                                result; // ✅ Update token if a new one was received
+                                          }
+                                        });
+
+                                        _fetchSetupGuide(); // ✅ Reload setup guide
+                                      } else {
+                                        print(
+                                            "⚠️ No result returned, _fetchSetupGuide() will not be called.");
                                       }
                                     },
                                   ),
