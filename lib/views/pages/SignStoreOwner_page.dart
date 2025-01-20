@@ -12,7 +12,7 @@ class SignUpStoreOwnerPage extends StatefulWidget {
   const SignUpStoreOwnerPage({
     Key? key,
     required this.role,
-    required this.plan, 
+    required this.plan,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  final FocusNode _usernameFocusNode = FocusNode(); // Add FocusNode
+  // final FocusNode _usernameFocusNode = FocusNode(); // Add FocusNode
   bool isPaidAccount = false;
   bool isUsernameValid = false; // New variable to track username validity
   bool isEmailValid = false;
@@ -131,12 +131,12 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
     return null;
   }
 
-  void _checkPasswordStrength(String value) {
-    setState(() {
-      isPasswordValid = _validatePassword(value) == null;
-      hasPasswordBeenInteracted = true;
-    });
-  }
+  // void _checkPasswordStrength(String value) {
+  //   setState(() {
+  //     isPasswordValid = _validatePassword(value) == null;
+  //     hasPasswordBeenInteracted = true;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
