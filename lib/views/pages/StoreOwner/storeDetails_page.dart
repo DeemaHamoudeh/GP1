@@ -21,6 +21,12 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
   String storeName = "My Store";
   String storePhone = "+970 599 123 456";
   String storeLogo = "Tap to edit logo";
+  String storeEmail = "store@example.com";
+  String storeCity = "Enter City";
+  String storeCountry = "Enter Country";
+  String storeZip = "Enter Zip Code";
+  String storeAddress = "Enter Address"; // Add this line
+
   late String? token;
 
   List<String> _categories = [
@@ -37,12 +43,39 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
   ];
 
   List<String> _selectedCategories = []; // Stores selected categories
+  TextEditingController storeCityController =
+      TextEditingController(text: "Enter City");
+  TextEditingController storeCountryController =
+      TextEditingController(text: "Enter Country");
+  TextEditingController storeZipController =
+      TextEditingController(text: "Enter Zip Code");
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     token = widget.token; // ✅ Store the token
     print("🔑 StoreDetailsPage received token: $token");
+    storeCityController = TextEditingController(text: "Enter City");
+    storeCountryController = TextEditingController(text: "Enter Country");
+    storeZipController = TextEditingController(text: "Enter Zip Code");
+  }
+
+  @override
+  void dispose() {
+    storeCityController.dispose();
+    storeCountryController.dispose();
+    storeZipController.dispose();
+    super.dispose();
+  }
+
+  void _pickImage(Function(String) onSave) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      onSave(pickedFile.path);
+    }
   }
 
   @override
@@ -79,7 +112,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                 ],
               ),
             ),
-            SizedBox(height: 12),
+            //  SizedBox(height: 9),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -90,6 +123,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                       // Store Information Card
                       Card(
                         elevation: 2,
+                        color: Color(0xFFF8F9FA),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ),
@@ -125,6 +159,18 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                               Divider(color: Colors.grey[300]),
                               _buildEditableRow(
                                 context: context,
+                                label: "Store Email", // ✅ Added Email Field
+                                value: storeEmail,
+                                icon: Icons.email,
+                                onSave: (newValue) {
+                                  setState(() {
+                                    storeEmail = newValue;
+                                  });
+                                },
+                              ),
+                              Divider(color: Colors.grey[300]),
+                              _buildEditableRow(
+                                context: context,
                                 label: "Store Logo",
                                 value: storeLogo,
                                 icon: Icons.image,
@@ -137,11 +183,88 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                                 isImage:
                                     true, // Tell function to open image picker
                               ),
+                              // _buildEditableRow(
+                              //   context: context,
+                              //   label: "City",
+                              //   value: storeCity,
+                              //   icon: Icons.location_city,
+                              //   onSave: (newValue) =>
+                              //       setState(() => storeCity = newValue),
+                              // ),
+                              // Divider(color: Colors.grey[300]),
+                              // _buildEditableRow(
+                              //   context: context,
+                              //   label: "Country",
+                              //   value: storeCountry,
+                              //   icon: Icons.public,
+                              //   onSave: (newValue) =>
+                              //       setState(() => storeCountry = newValue),
+                              // ),
+                              // Divider(color: Colors.grey[300]),
+                              // _buildEditableRow(
+                              //   context: context,
+                              //   label: "Zip Code",
+                              //   value: storeZip,
+                              //   icon: Icons.pin_drop,
+                              //   onSave: (newValue) =>
+                              //       setState(() => storeZip = newValue),
+                              // ),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 60),
+                      // SizedBox(height: 40),
+                      // 🏠 Placeholder for Store Address (To be added later)
+                      SizedBox(height: 20),
+                      Text(
+                        'Store Address',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+
+                      Card(
+                        elevation: 2,
+                        color: Color(0xFFF8F9FA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16.0, horizontal: 16.0),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildEditableTextField(
+                                          "City",
+                                          storeCityController,
+                                          Icons.location_city),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildEditableTextField("Country",
+                                          storeCountryController, Icons.public),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                _buildEditableTextField("Zip Code",
+                                    storeZipController, Icons.pin_drop),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 12),
+
                       // Additional fields
                       Text(
                         'Store Description',
@@ -162,6 +285,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                         maxLines: 3,
                       ),
                       SizedBox(height: 50),
+
                       Text(
                         'Store Category',
                         style: TextStyle(
@@ -222,26 +346,33 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                             )
                           : Text("No categories selected"),
 
-                      SizedBox(height: 80),
+                      SizedBox(height: 50),
                       // Save Button
                       Center(
                         child: ElevatedButton(
                           onPressed: () async {
-                            if (storeName.isNotEmpty &&
-                                storeName != "My Store") {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              await prefs.setBool("store_name_added", true);
-                              print("correctly added");
-                            }
-                            print(widget.token);
+                            if (_formKey.currentState!.validate()) {
+                              print(
+                                  "✅ Address fields are valid! Proceeding...");
+                              if (storeName.isNotEmpty &&
+                                  storeName != "My Store") {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setBool("store_name_added", true);
+                                print("correctly added");
+                              }
+                              print(widget.token);
 
-                            // ✅ Ensure Dashboard reloads on return
-                            if (mounted) {
-                              Navigator.pop(
-                                  context,
-                                  widget
-                                      .token); // Return `true` to notify refresh
+                              // ✅ Ensure Dashboard reloads on return
+                              if (mounted) {
+                                Navigator.pop(
+                                    context,
+                                    widget
+                                        .token); // Return `true` to notify refresh
+                              }
+                              // Perform save actions here
+                            } else {
+                              print("❌ Validation failed! Fix the errors.");
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -275,50 +406,103 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
     );
   }
 
+  Widget _buildEditableTextField(
+      String label, TextEditingController controller, IconData icon) {
+    return TextFormField(
+      controller: controller,
+      autovalidateMode:
+          AutovalidateMode.onUserInteraction, // Validate while typing
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.grey[600]),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      onTap: () {
+        if (controller.text == "Enter City" ||
+            controller.text == "Enter Country" ||
+            controller.text == "Enter Zip Code") {
+          controller.clear(); // Clears placeholder when user taps
+        }
+      },
+      onChanged: (value) {
+        setState(() {}); // Update validation in real time
+      },
+      validator: (value) {
+        if (value == null ||
+            value.trim().isEmpty ||
+            value == "Enter City" ||
+            value == "Enter Country" ||
+            value == "Enter Zip Code") {
+          return null; // ✅ Skip validation if placeholder remains
+        }
+        if (label == "Zip Code" &&
+            !RegExp(r'^[a-zA-Z0-9\s-]{4,10}$').hasMatch(value)) {
+          return "Enter a valid zip code (4-10 digits)";
+        }
+        if ((label == "City" || label == "Country") &&
+            !RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+          return "$label should contain only letters";
+        }
+        return null;
+      },
+      keyboardType:
+          label == "Zip Code" ? TextInputType.number : TextInputType.text,
+    );
+  }
+
   Widget _buildEditableRow({
     required BuildContext context,
     required String label,
     required String value,
     required IconData icon,
     required Function(String) onSave,
-    bool isImage = false, // New parameter for handling image selection
+    bool isImage = false,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
-            SizedBox(height: 4),
-            isImage
-                ? (value.isNotEmpty &&
-                        File(value).existsSync()) // Check if file exists
-                    ? Image.file(
-                        File(value),
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      )
-                    : Text("Tap to upload logo",
-                        style: TextStyle(color: Colors.grey))
-                : Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+              SizedBox(height: 4),
+              isImage
+                  ? (value.isNotEmpty && File(value).existsSync())
+                      ? Image.file(
+                          File(value),
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        )
+                      : Text(
+                          "Tap to upload logo",
+                          style: TextStyle(color: Colors.grey),
+                        )
+                  : Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-          ],
+            ],
+          ),
         ),
         IconButton(
           icon: Icon(icon, color: Color(0xFF33B5AB)),
           onPressed: () {
-            _showEditPopup(context, label, value, onSave, isImage: isImage);
+            if (isImage) {
+              _pickImage(onSave);
+            } else {
+              _showEditPopup(context, label, value, onSave);
+            }
           },
         ),
       ],
@@ -326,23 +510,10 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
   }
 
   void _showEditPopup(BuildContext context, String label, String initialValue,
-      Function(String) onSave,
-      {bool isImage = false}) async {
+      Function(String) onSave) {
     final TextEditingController controller = TextEditingController();
     controller.text = initialValue;
     final _formKey = GlobalKey<FormState>();
-
-    File? _selectedImage; // Store selected image
-
-    if (isImage) {
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        _selectedImage = File(pickedFile.path);
-        onSave(pickedFile.path); // Save image path
-      }
-      return; // No need for text input in case of image selection
-    }
 
     showDialog(
       context: context,
@@ -363,8 +534,10 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                 if (value == null || value.trim().isEmpty) {
                   return "$label cannot be empty";
                 }
-                if (label == "Store Name" && value.length < 3) {
-                  return "Store Name must be at least 3 characters";
+                if (label == "Store Email" &&
+                    !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
+                  return "Enter a valid email address";
                 }
                 if (label == "Store Phone" &&
                     !RegExp(r'^[0-9]{10,15}$').hasMatch(value)) {
@@ -374,7 +547,9 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
               },
               keyboardType: label == "Store Phone"
                   ? TextInputType.phone
-                  : TextInputType.text,
+                  : label == "Store Email"
+                      ? TextInputType.emailAddress
+                      : TextInputType.text,
             ),
           ),
           actions: [
