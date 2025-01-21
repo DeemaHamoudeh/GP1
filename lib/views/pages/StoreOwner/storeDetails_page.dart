@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import '../../../../controllers/userController.dart'; // Import UserController
+import '../../../../controllers/storeController.dart';
 
 Future<void> _markStepAsCompleted() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -28,7 +30,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
   String storeAddress = "Enter Address"; // Add this line
 
   late String? token;
-
+  String? storeId;
   List<String> _categories = [
     "Fashion & Apparel",
     "Electronics & Gadgets",
@@ -49,8 +51,75 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
       TextEditingController(text: "Enter Country");
   TextEditingController storeZipController =
       TextEditingController(text: "Enter Zip Code");
+  Map<String, String> originalValues = {};
 
   final _formKey = GlobalKey<FormState>();
+  Future<void> fetchStoreDetails() async {
+    if (token == null || storeId == null) {
+      print("❌ Error: Token or Store ID is missing.");
+      return;
+    }
+
+    try {
+      print("go to getStoreDetails");
+      final storeController = StoreController();
+      final response = await storeController.getStoreDetails(token!, storeId!);
+      print("return from getStoreDetails");
+      if (response['success']) {
+        final storeData = response['data'];
+
+        setState(() {
+          storeName = storeData['name'] ?? storeName;
+          storePhone = storeData['phone'] ?? storePhone;
+          storeLogo = storeData['logo'] ?? storeLogo;
+          storeEmail = storeData['email'] ?? storeEmail;
+
+          storeCityController.text =
+              storeData['address']?['city'] ?? storeCityController.text;
+          storeCountryController.text =
+              storeData['address']?['country'] ?? storeCountryController.text;
+          storeZipController.text =
+              storeData['address']?['zipCode'] ?? storeZipController.text;
+        });
+
+        print("✅ Store details loaded successfully.");
+      } else {
+        print("❌ Failed to fetch store details: ${response['message']}");
+      }
+    } catch (error) {
+      print("❌ Error fetching store details: $error");
+    }
+  }
+
+  Future<void> _fetchUserInfo() async {
+    if (token == null) {
+      print("❌ Error: Token is missing.");
+      return;
+    }
+
+    try {
+      final userController = UserController();
+      final result = await userController.fetchUserInfo(token!);
+
+      if (result['success']) {
+        setState(() {
+          storeId = result['data']['additionalDetails']['storeOwnerDetails']
+              ['storeIds'][0];
+        });
+
+        if (storeId == null) {
+          print("❌ Error: Store ID is still null after fetching user info.");
+          return;
+        }
+
+        print("✅ Store ID retrieved: $storeId");
+      } else {
+        print("❌ Failed to fetch user info: ${result['message']}");
+      }
+    } catch (error) {
+      print("❌ Error fetching user info: $error");
+    }
+  }
 
   @override
   void initState() {
@@ -60,6 +129,15 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
     storeCityController = TextEditingController(text: "Enter City");
     storeCountryController = TextEditingController(text: "Enter Country");
     storeZipController = TextEditingController(text: "Enter Zip Code");
+
+    _fetchUserInfo().then((_) {
+      if (storeId != null) {
+        print("🚀 Store ID available, fetching store details...");
+        fetchStoreDetails();
+      } else {
+        print("❌ Error: Store ID is still null, skipping fetchStoreDetails()");
+      }
+    });
   }
 
   @override
@@ -75,6 +153,81 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       onSave(pickedFile.path);
+    }
+  }
+
+  Future<void> updateStoreDetails() async {
+    print("🛠️ Sending updated store details...");
+
+    if (token == null || storeId == null) {
+      print("❌ Error: Token or Store ID is missing.");
+      return;
+    }
+
+    // ✅ Filter only changed fields
+    Map<String, dynamic> updatedData = {};
+
+    bool storeNameChanged = storeName != originalValues["name"];
+    if (storeNameChanged) updatedData["name"] = storeName;
+
+    String cleanedPhoneNumber = storePhone.trim();
+    if (cleanedPhoneNumber != originalValues["phone"]) {
+      updatedData["phone"] = cleanedPhoneNumber;
+    }
+
+    if (storeLogo != originalValues["logo"]) updatedData["logo"] = storeLogo;
+
+    if (storeCityController.text != originalValues["city"] ||
+        storeCountryController.text != originalValues["country"] ||
+        storeZipController.text != originalValues["zip"]) {
+      updatedData["address"] = {
+        "city": storeCityController.text.trim(),
+        "country": storeCountryController.text.trim(),
+        "zipCode": storeZipController.text.trim(),
+      };
+    }
+
+    if (updatedData.isEmpty) {
+      print("✅ No changes detected. Skipping update.");
+      return;
+    }
+
+    print("📡 Data being sent: $updatedData");
+
+    try {
+      final storeController = StoreController();
+      final response = await storeController.updateStoreDetails(
+        token!,
+        storeId!,
+        updatedData, // ✅ Send only changed fields
+      );
+
+      if (response['success']) {
+        print("✅ Store details updated successfully.");
+
+        final userController = UserController();
+
+        // ✅ **If store name changed, mark step as completed**
+        if (storeNameChanged) {
+          print("🔄 Store name changed! Marking Step 1 as completed...");
+          await userController.updateSetupGuide(token!, 1, true);
+          print("✅ Step 1 marked as completed.");
+        }
+
+        // ✅ Reload setup guide after update
+        await userController.fetchSetupGuide(token!);
+        print("✅ Setup guide reloaded.");
+
+        // ✅ **Ensure navigation happens AFTER updates**
+        if (mounted) {
+          print("🚀 Navigating back to Dashboard...");
+          Navigator.pop(context, true); // ✅ This ensures navigation back
+        }
+      } else {
+        print("❌ Failed to update store details: ${response['message']}");
+      }
+    } catch (error) {
+      print("❌ Error updating store details: $error");
     }
   }
 
@@ -354,23 +507,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                             if (_formKey.currentState!.validate()) {
                               print(
                                   "✅ Address fields are valid! Proceeding...");
-                              if (storeName.isNotEmpty &&
-                                  storeName != "My Store") {
-                                SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                await prefs.setBool("store_name_added", true);
-                                print("correctly added");
-                              }
-                              print(widget.token);
-
-                              // ✅ Ensure Dashboard reloads on return
-                              if (mounted) {
-                                Navigator.pop(
-                                    context,
-                                    widget
-                                        .token); // Return `true` to notify refresh
-                              }
-                              // Perform save actions here
+                              await updateStoreDetails(); // ✅ استدعاء دالة تحديث البيانات
                             } else {
                               print("❌ Validation failed! Fix the errors.");
                             }
@@ -394,7 +531,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                             ),
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -430,20 +567,27 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
         setState(() {}); // Update validation in real time
       },
       validator: (value) {
-        if (value == null ||
-            value.trim().isEmpty ||
+        // ✅ Skip validation if the field hasn't changed
+        if (value == originalValues[label.toLowerCase()] ||
             value == "Enter City" ||
             value == "Enter Country" ||
             value == "Enter Zip Code") {
-          return null; // ✅ Skip validation if placeholder remains
+          return null;
         }
         if (label == "Zip Code" &&
+            value != null &&
             !RegExp(r'^[a-zA-Z0-9\s-]{4,10}$').hasMatch(value)) {
           return "Enter a valid zip code (4-10 digits)";
         }
         if ((label == "City" || label == "Country") &&
+            value != null &&
             !RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
           return "$label should contain only letters";
+        }
+        if (label == "Store Phone" &&
+            value != null &&
+            !RegExp(r'^[0-9]{10,15}$').hasMatch(value)) {
+          return "Enter a valid phone number (10-15 digits)";
         }
         return null;
       },

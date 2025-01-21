@@ -50,34 +50,24 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
   }
 
   Future<void> _fetchSetupGuide() async {
-    print("🛠️ Entering _fetchSetupGuide()");
+    print("🛠️ Fetching Setup Guide");
     if (token == null || token!.isEmpty) {
-      print("❌ Error: Token is null or empty.");
+      print("❌ Token is missing.");
       return;
     }
 
     try {
-      print("🔑 Using token: $token");
       final userController = UserController();
       final result = await userController.fetchSetupGuide(token!);
 
       if (result['success']) {
         print("✅ Setup Guide fetched successfully.");
+
         setState(() {
           steps = List<Map<String, dynamic>>.from(result['data']);
         });
 
-        // ✅ Check SharedPreferences for step completion
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        bool isStoreNameAdded = prefs.getBool("store_name_added") ?? false;
-        print("📌 SharedPreferences - store_name_added: $isStoreNameAdded");
-
-        if (isStoreNameAdded) {
-          setState(() {
-            print("✅ Step 1 marked as completed");
-            steps[0]["isCompleted"] = true;
-          });
-        }
+        print("🔄 Updated steps: $steps");
       } else {
         print('❌ Failed to fetch setup guide: ${result['message']}');
       }
@@ -492,68 +482,59 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: steps
-                          .asMap()
-                          .entries
-                          .map((entry) => Column(
-                                children: [
-                                  ListTile(
-                                    leading: Icon(
-                                      entry.value["isCompleted"]
-                                          ? Icons.check_circle
-                                          : Icons.radio_button_unchecked,
-                                      color: entry.value["isCompleted"]
-                                          ? Colors.teal
-                                          : Colors.grey,
-                                    ),
-                                    title: Text(
-                                      entry.value["title"] ?? "Untitled Step",
-                                      style: TextStyle(
-                                        color: entry.value["isCompleted"]
-                                            ? Colors.teal
-                                            : Colors.grey[700],
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    trailing: Icon(Icons.arrow_forward,
-                                        color: Colors.teal),
-                                    onTap: () async {
-                                      final result = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                StoreDetailsPage(
-                                                    token: widget.token)),
-                                      );
+                      children:
+                          steps.isNotEmpty // ✅ تحقق من أن البيانات ليست فارغة
+                              ? steps.map((step) {
+                                  return Column(
+                                    children: [
+                                      ListTile(
+                                        leading: Icon(
+                                          step["isCompleted"]
+                                              ? Icons.check_circle
+                                              : Icons.radio_button_unchecked,
+                                          color: step["isCompleted"]
+                                              ? Colors.teal
+                                              : Colors.grey,
+                                        ),
+                                        title: Text(
+                                          step["title"] ?? "Untitled Step",
+                                          style: TextStyle(
+                                            color: step["isCompleted"]
+                                                ? Colors.teal
+                                                : Colors.grey[700],
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        trailing: Icon(Icons.arrow_forward,
+                                            color: Colors.teal),
+                                        onTap: () async {
+                                          final result = await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  StoreDetailsPage(
+                                                      token: widget.token),
+                                            ),
+                                          );
 
-                                      // ✅ Ensure we receive a valid token or flag to reload
-                                      if (result != null) {
-                                        print(
-                                            "🔄 Returning to Dashboard, result: $result");
-
-                                        setState(() {
-                                          if (result is String) {
-                                            token =
-                                                result; // ✅ Update token if a new one was received
+                                          if (result == true) {
+                                            print(
+                                                "🔄 Reloading setup guide after store update...");
+                                            _fetchSetupGuide(); // ✅ إعادة تحميل البيانات بعد التحديث
                                           }
-                                        });
-
-                                        _fetchSetupGuide(); // ✅ Reload setup guide
-                                      } else {
-                                        print(
-                                            "⚠️ No result returned, _fetchSetupGuide() will not be called.");
-                                      }
-                                    },
-                                  ),
-                                  if (entry.key != steps.length - 1)
-                                    Divider(color: Colors.grey[300]),
-                                ],
-                              ))
-                          .toList(),
+                                        },
+                                      ),
+                                      Divider(color: Colors.grey[300]),
+                                    ],
+                                  );
+                                }).toList()
+                              : [
+                                  Text("No setup guide found")
+                                ], // ✅ عرض رسالة إذا لم تكن هناك خطوات
                     ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),
