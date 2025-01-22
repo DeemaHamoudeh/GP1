@@ -586,7 +586,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
         }
         if (label == "Store Phone" &&
             value != null &&
-            !RegExp(r'^[0-9]{10,15}$').hasMatch(value)) {
+            !RegExp(r'^[0-9+\-\s]{8,19}$').hasMatch(value)) {
           return "Enter a valid phone number (10-15 digits)";
         }
         return null;
@@ -684,7 +684,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
                   return "Enter a valid email address";
                 }
                 if (label == "Store Phone" &&
-                    !RegExp(r'^[0-9]{10,15}$').hasMatch(value)) {
+                    !RegExp(r'^[0-9+\-\s]{8,19}$').hasMatch(value)) {
                   return "Enter a valid phone number (10-15 digits)";
                 }
                 return null;

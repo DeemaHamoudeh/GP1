@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http; // For making HTTP requests
 import '../../../../controllers/userController.dart'; // Import UserController
 import '../login_page.dart'; // Import the login page
 import 'storeDetails_page.dart';
+import 'addProduct_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardStoreOwnerPage extends StatefulWidget {
@@ -482,55 +483,77 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children:
-                          steps.isNotEmpty // ✅ تحقق من أن البيانات ليست فارغة
-                              ? steps.map((step) {
-                                  return Column(
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(
-                                          step["isCompleted"]
-                                              ? Icons.check_circle
-                                              : Icons.radio_button_unchecked,
-                                          color: step["isCompleted"]
-                                              ? Colors.teal
-                                              : Colors.grey,
-                                        ),
-                                        title: Text(
-                                          step["title"] ?? "Untitled Step",
-                                          style: TextStyle(
-                                            color: step["isCompleted"]
-                                                ? Colors.teal
-                                                : Colors.grey[700],
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        trailing: Icon(Icons.arrow_forward,
-                                            color: Colors.teal),
-                                        onTap: () async {
-                                          final result = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  StoreDetailsPage(
-                                                      token: widget.token),
-                                            ),
-                                          );
-
-                                          if (result == true) {
-                                            print(
-                                                "🔄 Reloading setup guide after store update...");
-                                            _fetchSetupGuide(); // ✅ إعادة تحميل البيانات بعد التحديث
-                                          }
-                                        },
+                      children: steps.isNotEmpty //
+                          ? steps.map((step) {
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    leading: Icon(
+                                      step["isCompleted"]
+                                          ? Icons.check_circle
+                                          : Icons.radio_button_unchecked,
+                                      color: step["isCompleted"]
+                                          ? Colors.teal
+                                          : Colors.grey,
+                                    ),
+                                    title: Text(
+                                      step["title"] ?? "Untitled Step",
+                                      style: TextStyle(
+                                        color: step["isCompleted"]
+                                            ? Colors.teal
+                                            : Colors.grey[700],
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      Divider(color: Colors.grey[300]),
-                                    ],
-                                  );
-                                }).toList()
-                              : [
-                                  Text("No setup guide found")
-                                ], // ✅ عرض رسالة إذا لم تكن هناك خطوات
+                                    ),
+                                    trailing: Icon(Icons.arrow_forward,
+                                        color: Colors.teal),
+                                    onTap: () async {
+                                      if (step["title"] ==
+                                          "Name your product") {
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                StoreDetailsPage(
+                                                    token: widget.token),
+                                          ),
+                                        );
+
+                                        if (result == true) {
+                                          print(
+                                              "🔄 Reloading setup guide after store update...");
+                                          _fetchSetupGuide(); // ✅ إعادة تحميل البيانات بعد التحديث
+                                        }
+                                      } else if (step["title"] ==
+                                          "Add your product") {
+                                        // ✅ Second Step: Navigate to Add Product Page
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AddProductPage(), // ✅ Navigate to Add Product Page
+                                          ),
+                                        );
+
+                                        if (result == true) {
+                                          print(
+                                              "🔄 Reloading setup guide after adding product...");
+                                          _fetchSetupGuide(); // ✅ Reload setup guide after returning
+                                        }
+                                      } else {
+                                        // ✅ Default behavior for other steps (optional)
+                                        print(
+                                            "No specific navigation for this step.");
+                                      }
+                                    },
+                                  ),
+                                  Divider(color: Colors.grey[300]),
+                                ],
+                              );
+                            }).toList()
+                          : [
+                              Text("No setup guide found")
+                            ], // ✅ عرض رسالة إذا لم تكن هناك خطوات
                     ),
                   ),
                 ),
