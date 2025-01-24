@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 
 class PasswordResetSuccessPage extends StatefulWidget {
+  const PasswordResetSuccessPage({super.key});
+
   @override
   _PasswordResetSuccessPageState createState() =>
       _PasswordResetSuccessPageState();

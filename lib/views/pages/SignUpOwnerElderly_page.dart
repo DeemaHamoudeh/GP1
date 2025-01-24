@@ -7,10 +7,10 @@ class SignUpStoreOwnerPageElderly extends StatefulWidget {
   final String plan;
 
   const SignUpStoreOwnerPageElderly({
-    Key? key,
+    super.key,
     required this.role,
-    required this.plan, 
-  }) : super(key: key);
+    required this.plan,
+  });
 
   @override
   State<SignUpStoreOwnerPageElderly> createState() => _SignUpStoreOwnerPageState();
@@ -205,7 +205,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPageElderly> {
                           backgroundColor: Colors.transparent,
                         ).copyWith(
                           shadowColor:
-                              MaterialStateProperty.all(Colors.transparent),
+                              WidgetStateProperty.all(Colors.transparent),
                         ),
                         child: Ink(
                           decoration: BoxDecoration(

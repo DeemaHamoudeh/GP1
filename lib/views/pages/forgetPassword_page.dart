@@ -4,6 +4,8 @@ import 'verifyEmail_page.dart';
 import '../../../controllers/userController.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
@@ -195,16 +197,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         }
                       }
                     },
-                    child: Text(
-                      "Send",
-                      style: TextStyle(fontSize: 22, color: Colors.white),
-                    ),
                     style: ElevatedButton.styleFrom(
                       fixedSize: const Size(200, 50),
                       backgroundColor: Colors.teal,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
+                    ),
+                    child: Text(
+                      "Send",
+                      style: TextStyle(fontSize: 22, color: Colors.white),
                     ),
                   ),
                 ),

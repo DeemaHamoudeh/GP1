@@ -83,7 +83,7 @@ class _InitializationPageState extends State<InitializationPage>
                           });
                         },
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               );

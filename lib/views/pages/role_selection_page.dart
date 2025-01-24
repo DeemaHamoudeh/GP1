@@ -6,7 +6,7 @@ import 'SignUpStoreEmployeecolorblind_Normal_page.dart ';
 import 'SignupStoreEmployeeLowVision_page.dart';
 
 class RoleSelectionPage extends StatefulWidget {
-  const RoleSelectionPage({Key? key}) : super(key: key);
+  const RoleSelectionPage({super.key});
 
   @override
   State<RoleSelectionPage> createState() => _RoleSelectionPageState();
@@ -14,17 +14,17 @@ class RoleSelectionPage extends StatefulWidget {
 
 class _RoleSelectionPageState extends State<RoleSelectionPage> {
   String selectedRole = "";
-  String? colorBlindType; 
+  String? colorBlindType;
   String? userStatus;
 
   @override
   void initState() {
     super.initState();
-    _loadColorBlindType(); 
+    _loadColorBlindType();
     _loadUserStatus();
   }
 
-  Future<void> _loadColorBlindType() async { 
+  Future<void> _loadColorBlindType() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       colorBlindType = prefs.getString('colorblind_type') ?? 'none';
@@ -37,9 +37,9 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
       userStatus = prefs.getString('user_status') ?? 'none';
     });
     debugPrint("User status loaded: $userStatus");
-  } 
+  }
 
-  ColorFilter _getColorFilter(String? type) { 
+  ColorFilter _getColorFilter(String? type) {
     switch (type) {
       case 'protanomaly': // Reduced sensitivity to red
         return const ColorFilter.mode(
@@ -87,7 +87,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
           BlendMode.color,
         );
     }
-  } 
+  }
 
   Widget roleBox(String title, String imagePath) {
     bool isSelected = selectedRole == title;
@@ -143,11 +143,11 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorFilter = _getColorFilter(colorBlindType); 
+    final colorFilter = _getColorFilter(colorBlindType);
 
     return Scaffold(
-      body: ColorFiltered( 
-        colorFilter: colorFilter, 
+      body: ColorFiltered(
+        colorFilter: colorFilter,
         child: SafeArea(
           child: Stack(
             children: [
@@ -230,7 +230,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                 builder: (context) =>
                                     SignUpStoreEmployeeElderlyPage(),
                               ),
-                            );  
+                            );
                           } else if (userStatus == 'colorblind' || userStatus == 'none') { // Sign up for Store Employee normal or colorblind user
                             Navigator.push(
                               context,
@@ -238,7 +238,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                 builder: (context) =>
                                     SignUpStoreStoreEmployeeColorBlindNormalPage(),
                               ),
-                            );  
+                            );
                           } else if (userStatus == 'low_vision') { // Sign up for Store Employee Elderly user
                             Navigator.push(
                               context,
@@ -246,7 +246,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                 builder: (context) =>
                                     SignUpStoreEmployeeBlindPage(),
                               ),
-                            );  
+                            );
                           }
                           // Sign up for Store Employee low vision user
 

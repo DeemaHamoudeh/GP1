@@ -2,22 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For SharedPreferences
-import 'jobPosts_page.dart';
+import 'storeEmployeeconfirm_page.dart';
 
 class SignUpStoreStoreEmployeeColorBlindNormalPage extends StatefulWidget {
   const SignUpStoreStoreEmployeeColorBlindNormalPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SignUpStoreStoreEmployeeColorBlindNormalPage> createState() => _SignUpStoreStoreEmployeePageState();
 }
 
-class _SignUpStoreStoreEmployeePageState 
+class _SignUpStoreStoreEmployeePageState
     extends State<SignUpStoreStoreEmployeeColorBlindNormalPage> {
     final TextEditingController _coverLetterController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+  final List<String> _jobPositions = [
+    'Inventory Manager',
+    'Customer Service',
+    'Stock Associate',
+    'Sales Assistant',
+    'Shift Supervisor',
+  ];
+
+  String? _selectedJobPosition;
+
   String? colorBlindType;
 
   @override
@@ -101,7 +112,7 @@ class _SignUpStoreStoreEmployeePageState
       Navigator.pop(context); // Close the confirmation message
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const JobPostsPage()),
+        MaterialPageRoute(builder: (context) => const EmployeeConfirmWait()),
       );
     });
   }
@@ -215,6 +226,36 @@ class _SignUpStoreStoreEmployeePageState
                         ),
                         const SizedBox(height: 20),
                         _buildTextField(
+                          labelText: "Store ID you what to apply for",
+                          icon: Icons.lock,
+                          validator: (value) => value!.length < 5
+                              ? "please enter Store ID (it should be 5 numbers)"
+                              : null,
+                        ),
+                        const SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: "Job Position",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          items: _jobPositions.map((String position) {
+                            return DropdownMenuItem<String>(
+                              value: position,
+                              child: Text(position),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedJobPosition = value;
+                            });
+                          },
+                          validator: (value) =>
+                              value == null ? "Please select a job position" : null,
+                        ),
+                        const SizedBox(height: 20),
+                        _buildTextField(
                           labelText: "Phone Number",
                           icon: Icons.phone,
                           keyboardType: TextInputType.phone,
@@ -261,7 +302,7 @@ class _SignUpStoreStoreEmployeePageState
                               backgroundColor: Colors.transparent,
                             ).copyWith(
                               shadowColor:
-                                  MaterialStateProperty.all(Colors.transparent),
+                                  WidgetStateProperty.all(Colors.transparent),
                             ),
                             child: Ink(
                               decoration: BoxDecoration(

@@ -6,7 +6,7 @@ import 'correctlyRestPassword.dart';
 class CreatePasswordPage extends StatefulWidget {
   final String email;
   final String pin;
-  CreatePasswordPage({required this.email, required this.pin});
+  const CreatePasswordPage({super.key, required this.email, required this.pin});
 
   @override
   _CreatePasswordPageState createState() => _CreatePasswordPageState();
@@ -238,16 +238,16 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
                       _confirmPasswordController.text.trim(),
                     );
                   },
-                  child: Text(
-                    'Change Password',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
                   style: ElevatedButton.styleFrom(
                     fixedSize: const Size(200, 50),
                     backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
+                  ),
+                  child: Text(
+                    'Change Password',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 ),
               ],

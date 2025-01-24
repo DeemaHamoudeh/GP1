@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
-import 'package:color_blindness/color_blindness.dart'; // For color blindness filters
+// For color blindness filters
 import 'package:shared_preferences/shared_preferences.dart'; // For SharedPreferences
 
 class SignUpStoreOwnerColorBlindPage extends StatefulWidget {
@@ -9,10 +9,10 @@ class SignUpStoreOwnerColorBlindPage extends StatefulWidget {
   final String plan;
 
   const SignUpStoreOwnerColorBlindPage({
-    Key? key,
+    super.key,
     required this.role,
     required this.plan,
-  }) : super(key: key);
+  });
 
   @override
   State<SignUpStoreOwnerColorBlindPage> createState() => _SignUpStoreOwnerPageState();
@@ -243,7 +243,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerColorBlindPage> {
                               backgroundColor: Colors.transparent,
                             ).copyWith(
                               shadowColor:
-                                  MaterialStateProperty.all(Colors.transparent),
+                                  WidgetStateProperty.all(Colors.transparent),
                             ),
                             child: Ink(
                               decoration: BoxDecoration(

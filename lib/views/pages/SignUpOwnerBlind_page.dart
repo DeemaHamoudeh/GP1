@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -7,8 +6,7 @@ class SignUpOwnerBlindPage extends StatefulWidget {
   final String plan;
   final String role;
 
-  const SignUpOwnerBlindPage({required this.plan, required this.role, Key? key})
-      : super(key: key);
+  const SignUpOwnerBlindPage({required this.plan, required this.role, super.key});
 
   @override
   State<SignUpOwnerBlindPage> createState() => _SignUpOwnerBlindPageState();

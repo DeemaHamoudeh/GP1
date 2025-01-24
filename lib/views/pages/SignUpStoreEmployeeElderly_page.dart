@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/colors.dart';
-import 'jobPosts_page.dart';
+import 'storeEmployeeconfirm_page.dart';
 
 class SignUpStoreEmployeeElderlyPage extends StatefulWidget {
-  const SignUpStoreEmployeeElderlyPage({Key? key}) : super(key: key);
+  const SignUpStoreEmployeeElderlyPage({super.key});
 
   @override
   State<SignUpStoreEmployeeElderlyPage> createState() =>
@@ -14,6 +14,17 @@ class _SignUpStoreEmployeeElderlyPageState
     extends State<SignUpStoreEmployeeElderlyPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _coverLetterController = TextEditingController();
+
+  // List of job positions
+  final List<String> _jobPositions = [
+    'Inventory Manager',
+    'Customer Service',
+    'Stock Associate',
+    'Sales Assistant',
+    'Shift Supervisor',
+  ];
+
+  String? _selectedJobPosition; // Variable to hold the selected position
 
   void _showConfirmationMessage() {
     showDialog(
@@ -32,7 +43,7 @@ class _SignUpStoreEmployeeElderlyPageState
       Navigator.pop(context); // Close the confirmation message
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const JobPostsPage()),
+        MaterialPageRoute(builder: (context) => const EmployeeConfirmWait()),
       );
     });
   }
@@ -134,27 +145,33 @@ class _SignUpStoreEmployeeElderlyPageState
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      labelText: "Security Question 1: What is your favorite color?",
-                      icon: Icons.question_answer,
-                      validator: (value) => value!.isEmpty
-                          ? "Please answer this security question"
+                      labelText: "Store ID you want to apply for",
+                      icon: Icons.store,
+                      validator: (value) => value!.length < 5
+                          ? "Please enter Store ID (it should be 5 numbers)"
                           : null,
                     ),
                     const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Security Question 2: What is your pet's name?",
-                      icon: Icons.question_answer,
-                      validator: (value) => value!.isEmpty
-                          ? "Please answer this security question"
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Security Question 3: What is your childhood nickname?",
-                      icon: Icons.question_answer,
-                      validator: (value) => value!.isEmpty
-                          ? "Please answer this security question"
-                          : null,
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: "Job Position",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      items: _jobPositions.map((String position) {
+                        return DropdownMenuItem<String>(
+                          value: position,
+                          child: Text(position),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedJobPosition = value;
+                        });
+                      },
+                      validator: (value) =>
+                          value == null ? "Please select a job position" : null,
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -171,67 +188,65 @@ class _SignUpStoreEmployeeElderlyPageState
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      validator: (value) => value!.isEmpty
-                          ? "Please write a cover letter"
-                          : null,
+                      validator: (value) =>
+                          value!.isEmpty ? "Please write a cover letter" : null,
                     ),
                     const SizedBox(height: 40),
                     Center(
-                              child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
                             _showConfirmationMessage();
-                            }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              backgroundColor: Colors.transparent,
-                            ).copyWith(
-                              shadowColor:
-                                  MaterialStateProperty.all(Colors.transparent),
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.teal,
-                                    AppColors.basicBackgroundColor,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(100, 60, 172, 161),
-                                    offset: Offset(0, 4),
-                                    blurRadius: 8,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: Container(
-                                constraints:
-                                    BoxConstraints(minWidth: 88, minHeight: 44),
-                                alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.check_circle,
-                                        color: Colors.white, size: 24),
-                                    SizedBox(width: 8),
-                                    Text("Submit"),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            ),
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          backgroundColor: Colors.transparent,
+                        ).copyWith(
+                          shadowColor:
+                              WidgetStateProperty.all(Colors.transparent),
                         ),
-                    
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.teal,
+                                AppColors.basicBackgroundColor,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromARGB(100, 60, 172, 161),
+                                offset: Offset(0, 4),
+                                blurRadius: 8,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Container(
+                            constraints:
+                                const BoxConstraints(minWidth: 88, minHeight: 44),
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Icon(Icons.check_circle,
+                                    color: Colors.white, size: 24),
+                                SizedBox(width: 8),
+                                Text("Submit"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

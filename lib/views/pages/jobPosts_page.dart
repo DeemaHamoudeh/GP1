@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class JobPostsPage extends StatefulWidget {
-  const JobPostsPage({Key? key}) : super(key: key);
+  const JobPostsPage({super.key});
 
   @override
   State<JobPostsPage> createState() => _JobPostsPageState();

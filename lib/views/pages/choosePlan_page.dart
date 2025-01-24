@@ -8,7 +8,7 @@ import 'SignUpOwnerBlind_page.dart';
 class choosePlanPage extends StatefulWidget {
   final String role;
 
-  const choosePlanPage({Key? key, required this.role}) : super(key: key);
+  const choosePlanPage({super.key, required this.role});
 
   @override
   _choosePlanPageState createState() => _choosePlanPageState();
@@ -16,7 +16,7 @@ class choosePlanPage extends StatefulWidget {
 
 class _choosePlanPageState extends State<choosePlanPage> {
   String? userStatus;
-  String? colorBlindType; 
+  String? colorBlindType;
 
   @override
   void initState() {
@@ -175,7 +175,7 @@ Widget build(BuildContext context) {
           ),
         ),
       );
-    } 
+    }
     else if (userStatus == 'low_vision') {
       Navigator.push(
         context,

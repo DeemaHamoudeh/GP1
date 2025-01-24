@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 // UserModel class
 class UserModel {
@@ -26,7 +25,7 @@ class UserModel {
 
   // Method to update password
   void updatePassword(String newPassword) {
-    this.password = newPassword;
+    password = newPassword;
   }
 
   // Convert UserModel to JSON for API requests

@@ -5,7 +5,7 @@ import '../../../controllers/userController.dart'; // Import UserController
 class VerifyEmailPage extends StatefulWidget {
   final String email; // Receive email as a parameter
 
-  VerifyEmailPage({required this.email}); // Constructor to accept email
+  const VerifyEmailPage({super.key, required this.email}); // Constructor to accept email
 
   @override
   _VerifyEmailPageState createState() => _VerifyEmailPageState();
@@ -145,17 +145,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               ),
               SizedBox(height: 130),
               ElevatedButton(
-                onPressed: _verifyPin, // Call the function when pressed
-                child: Text(
-                  'Verify',
-                  style: TextStyle(fontSize: 22, color: Colors.white),
-                ),
+                onPressed: _verifyPin,
                 style: ElevatedButton.styleFrom(
                   fixedSize: const Size(200, 50),
                   backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
+                ), // Call the function when pressed
+                child: Text(
+                  'Verify',
+                  style: TextStyle(fontSize: 22, color: Colors.white),
                 ),
               ),
               TextButton(

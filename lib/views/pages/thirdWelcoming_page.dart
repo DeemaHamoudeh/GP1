@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 
 class ThirdWelcomingPage extends StatefulWidget {
-  const ThirdWelcomingPage({Key? key}) : super(key: key);
+  const ThirdWelcomingPage({super.key});
 
   @override
   _ThirdWelcomingPageState createState() => _ThirdWelcomingPageState();
