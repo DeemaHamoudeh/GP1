@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:convert'; // For JSON decoding
-import 'package:http/http.dart' as http; // For making HTTP requests
+// For JSON decoding
+// For making HTTP requests
 import '../../../../controllers/userController.dart'; // Import UserController
 import '../login_page.dart'; // Import the login page
 import 'storeDetails_page.dart';
@@ -11,9 +11,9 @@ class DashboardStoreOwnerPage extends StatefulWidget {
   final String? token;
 
   const DashboardStoreOwnerPage({
-    Key? key,
+    super.key,
     required this.token,
-  }) : super(key: key);
+  });
 
   @override
   State<DashboardStoreOwnerPage> createState() =>

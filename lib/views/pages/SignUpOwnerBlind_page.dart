@@ -11,7 +11,7 @@ class SignUpOwnerBlindPage extends StatefulWidget {
   @override
   State<SignUpOwnerBlindPage> createState() => _SignUpOwnerBlindPageState();
 }
-
+ 
 class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
   final _formKey = GlobalKey<FormState>();
   final _firstnameController = TextEditingController();

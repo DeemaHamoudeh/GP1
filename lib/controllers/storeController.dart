@@ -1,9 +1,5 @@
 import '../helpers/user_helper.dart';
-import '../models/userModel.dart';
 import 'dart:convert'; // Add this to use json.decode
-import 'package:url_launcher/url_launcher.dart';
-import 'package:uni_links/uni_links.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class StoreController {
   Future<Map<String, dynamic>> updateStoreDetails(

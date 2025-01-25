@@ -435,9 +435,14 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                             final confirmPassword =
                                 _confirmPasswordController.text.trim();
                             final condition = selectedAccessibility ?? 'None';
+                            final typecolorblind = 'None';
+                            final firstSecurityQuestion = null;
+                            final secondSecurityQuestion = null;
+                            final thirdSecurityQuestion = null;
 
                             if (isPaidAccount) {
                               print("paidd");
+
                               // Navigate to the payment details page
                               // Navigator.push(
                               //   context,
@@ -447,6 +452,10 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                               //       email: email,
                               //       password: password,
                               //       condition: condition,
+                              //       typecolorblind: typecolorblind,
+                              //      firstSecurityQuestion: firstSecurityQuestion,
+                              //      secondSecurityQuestion: secondSecurityQuestion,
+                              //      thirdSecurityQuestion: thirdSecurityQuestion,
                               //       role: widget.role,
                               //       plan: widget.plan,
                               //     ),
@@ -462,6 +471,10 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                                 role: widget.role,
                                 plan: widget.plan,
                                 condition: condition,
+                                typecolorblind: typecolorblind,
+                                firstSecurityQuestion: firstSecurityQuestion,
+                                secondSecurityQuestion: secondSecurityQuestion,
+                                thirdSecurityQuestion: thirdSecurityQuestion,
                               );
 
                               // Handle signup result
