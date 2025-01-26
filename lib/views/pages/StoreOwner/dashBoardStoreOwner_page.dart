@@ -29,13 +29,11 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
 
   // List of setup guide steps
   List<Map<String, dynamic>> steps = [
-    {"title": "Name your product", "isCompleted": false},
+    {"title": "Name your store", "isCompleted": false},
     {"title": "Add your product", "isCompleted": false},
     {"title": "Customize your online store", "isCompleted": true},
-    {"title": "Add pages to your store", "isCompleted": false},
-    {"title": "Organize navigation", "isCompleted": false},
     {"title": "Shipment and Delivery", "isCompleted": false},
-    {"title": "Payment", "isCompleted": false},
+    {"title": "Payment setup ", "isCompleted": false},
   ];
 
   @override
@@ -53,27 +51,27 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
   Future<void> _fetchSetupGuide() async {
     print("🛠️ Fetching Setup Guide");
     if (token == null || token!.isEmpty) {
-      print("❌ Token is missing.");
+      print(" Token is missing.");
       return;
     }
 
     try {
       final userController = UserController();
       final result = await userController.fetchSetupGuide(token!);
-
+      print("📡 Raw API Response: $result");
       if (result['success']) {
-        print("✅ Setup Guide fetched successfully.");
+        print(" Setup Guide fetched successfully.");
 
         setState(() {
           steps = List<Map<String, dynamic>>.from(result['data']);
         });
 
-        print("🔄 Updated steps: $steps");
+        print(" Updated steps: $steps");
       } else {
-        print('❌ Failed to fetch setup guide: ${result['message']}');
+        print(' Failed to fetch setup guide: ${result['message']}');
       }
     } catch (error) {
-      print("❌ Error fetching setup guide: $error");
+      print(" Error fetching setup guide: $error");
     }
   }
 
@@ -240,11 +238,11 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
 
                       setState(() {
                         if (result is String) {
-                          token = result; // ✅ Update token
+                          token = result; //  Update token
                         }
                       });
 
-                      _fetchSetupGuide(); // ✅ Reload setup guide
+                      _fetchSetupGuide(); // Reload setup guide
                     } else {
                       print(
                           "⚠️ No result returned, _fetchSetupGuide() will not be called.");
@@ -297,12 +295,10 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
       ),
       onTap: () {
         Navigator.pop(context); // Close the drawer
-        // Handle navigation logic
       },
     );
   }
 
-// Helper to build sub-menu item
   Widget _buildSubMenuItem(String title, BuildContext context) {
     return ListTile(
       title: Text(
@@ -311,7 +307,6 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
       ),
       onTap: () {
         Navigator.pop(context); // Close the drawer
-        // Handle navigation logic
       },
     );
   }
@@ -522,26 +517,27 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                         if (result == true) {
                                           print(
                                               "🔄 Reloading setup guide after store update...");
-                                          _fetchSetupGuide(); // ✅ إعادة تحميل البيانات بعد التحديث
+                                          _fetchSetupGuide();
                                         }
                                       } else if (step["title"] ==
                                           "Add your product") {
-                                        // ✅ Second Step: Navigate to Add Product Page
+                                        //  Second Step: Navigate to Add Product Page
                                         final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddProductPage(), // ✅ Navigate to Add Product Page
+                                            builder: (context) => AddProductPage(
+                                                token: widget
+                                                    .token), // ✅ Navigate to Add Product Page
                                           ),
                                         );
 
                                         if (result == true) {
                                           print(
                                               "🔄 Reloading setup guide after adding product...");
-                                          _fetchSetupGuide(); // ✅ Reload setup guide after returning
+                                          _fetchSetupGuide(); // Reload setup guide after returning
                                         }
                                       } else {
-                                        // ✅ Default behavior for other steps (optional)
+                                        //  Default behavior for other steps (optional)
                                         print(
                                             "No specific navigation for this step.");
                                       }
@@ -551,9 +547,7 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                 ],
                               );
                             }).toList()
-                          : [
-                              Text("No setup guide found")
-                            ], // ✅ عرض رسالة إذا لم تكن هناك خطوات
+                          : [Text("No setup guide found")],
                     ),
                   ),
                 ),
