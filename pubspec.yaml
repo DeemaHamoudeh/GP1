@@ -92,6 +92,12 @@ flutter:
     - assets/images/logPages/check .png
     - assets/images/logPages/credit-card (1).png
     - assets/images/logPages/paypal.png
+    - assets/images/themePages/ModernMinimalist.png
+    - assets/images/themePages/minimal.png
+    - assets/images/themePages/ModernMinimalist8.png
+    - assets/images/themePages/darkMode.png
+    - assets/images/themePages/dark.png
+    - assets/images/themePages/elegant.png
   
     
     

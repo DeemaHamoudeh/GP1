@@ -5,6 +5,8 @@ import '../../../../controllers/userController.dart'; // Import UserController
 import '../login_page.dart'; // Import the login page
 import 'storeDetails_page.dart';
 import 'addProduct_page.dart';
+import 'customizeStore_page.dart';
+import 'shippingList_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardStoreOwnerPage extends StatefulWidget {
@@ -46,6 +48,12 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchSetupGuide();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchSetupGuide(); // Reload the setup guide every time the user returns
   }
 
   Future<void> _fetchSetupGuide() async {
@@ -535,6 +543,41 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                           print(
                                               "🔄 Reloading setup guide after adding product...");
                                           _fetchSetupGuide(); // Reload setup guide after returning
+                                        }
+                                      } else if (step["title"] ==
+                                          "Customize your online store") {
+                                        //  Second Step: Navigate to Add Product Page
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                CustomizeStorePage(
+                                                    token: widget
+                                                        .token), // ✅ Navigate to Add Product Page
+                                          ),
+                                        );
+
+                                        if (result == true) {
+                                          print(
+                                              "🔄 Reloading setup guide after adding product...");
+                                          _fetchSetupGuide(); // Reload setup guide after returning
+                                        }
+                                      } else if (step["title"] ==
+                                          "Shipment and delivery") {
+                                        //  Second Step: Navigate to Add Product Page
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ShippingListPage(
+                                                token: widget
+                                                    .token), // ✅ Navigate to Add Product Page
+                                          ),
+                                        );
+
+                                        if (result == true) {
+                                          _fetchSetupGuide(); // Reload setup guide after returning
+                                          print(
+                                              "🔄 Reloading setup guide after adding product...");
                                         }
                                       } else {
                                         //  Default behavior for other steps (optional)
