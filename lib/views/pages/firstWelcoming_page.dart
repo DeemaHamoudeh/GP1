@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'secondWelcoming_page.dart';
 import 'package:frontend/constants/colors.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
 
 class FirstWelcomingPage extends StatefulWidget {
   const FirstWelcomingPage({super.key});
@@ -12,10 +14,16 @@ class FirstWelcomingPage extends StatefulWidget {
 
 class _FirstWelcomingPageState extends State<FirstWelcomingPage> {
   String? colorBlindType;
+  late FlutterTts _flutterTts;
 
   @override
   void initState() {
     super.initState();
+    _flutterTts = FlutterTts();
+    _flutterTts.setLanguage("en-US"); // Set language
+    _flutterTts.setSpeechRate(0.5);   // Adjust speech rate
+    _flutterTts.setVolume(2.0);       // Set volume
+    _flutterTts.setPitch(1.0);
     _loadColorBlindType();
   }
 
@@ -75,14 +83,26 @@ class _FirstWelcomingPageState extends State<FirstWelcomingPage> {
         );
     }
   }
+  Future<void> _speak(String text) async {
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setPitch(1.0);
+    await _flutterTts.speak(text);
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorFilter = _getColorFilter(colorBlindType);
 
     return Scaffold(
-      body: ColorFiltered(
-        colorFilter: colorFilter, // Apply the color filter
+     body: GestureDetector(
+      onTap: () async {
+        await _speak("Personalize your shop to reflect your brand identity");
+        await Future.delayed(const Duration(seconds: 1));
+        // await _speak("Next");
+      },
+      child: ColorFiltered(
+        colorFilter: colorFilter,
+        // Apply the color filter
         child: ListView(
           children: [
             // Container for the image
@@ -202,6 +222,7 @@ class _FirstWelcomingPageState extends State<FirstWelcomingPage> {
           ],
         ),
       ),
-    );
+     ),
+   );
   }
 }

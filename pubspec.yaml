@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  color_blindness: ^0.1.2
+  color_blindness: ^0.2.0
   flutter_tts: ^4.2.1
   speech_to_text: ^7.0.0
 
@@ -47,6 +47,8 @@ dependencies:
   shared_preferences: ^2.3.3
   cupertino_icons: ^1.0.8
   permission_handler: ^11.3.1
+  fl_chart: ^0.70.2
+  file_picker: ^8.3.1
 
 dev_dependencies:
   flutter_test:
@@ -96,6 +98,12 @@ flutter:
     - assets/images/logPages/letter (1).png
     - assets/images/logPages/correctPassword.png
     - assets/images/logPages/check .png
+    - assets/images/shop/T-shirt.png
+    - assets/images/shop/pants.png
+    - assets/images/shop/white-shirt.png
+    - assets/images/themePages/ModernMinimalist8.jpg
+    - assets/images/themePages/dark.jpg
+    - assets/images/themePages/elegant.jpg
 
 
 

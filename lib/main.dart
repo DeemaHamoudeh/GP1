@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/views/pages/initialization_page.dart';
 // import 'package:uni_links/uni_links.dart';
 import 'dart:async';
+import 'package:frontend/views/pages/form_example_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

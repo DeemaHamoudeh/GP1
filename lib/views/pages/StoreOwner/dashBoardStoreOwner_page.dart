@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-// For JSON decoding
-// For making HTTP requests
+import 'dart:convert'; // For JSON decoding
+import 'package:http/http.dart' as http; // For making HTTP requests
 import '../../../../controllers/userController.dart'; // Import UserController
 import '../login_page.dart'; // Import the login page
 import 'storeDetails_page.dart';
 import 'addProduct_page.dart';
+import 'customizeStore_page.dart';
+import 'shippingList_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'postLaunchDashboars_page.dart';
 
 class DashboardStoreOwnerPage extends StatefulWidget {
   final String? token;
 
   const DashboardStoreOwnerPage({
-    super.key,
+    Key? key,
     required this.token,
-  });
+  }) : super(key: key);
 
   @override
   State<DashboardStoreOwnerPage> createState() =>
@@ -29,13 +32,10 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
 
   // List of setup guide steps
   List<Map<String, dynamic>> steps = [
-    {"title": "Name your product", "isCompleted": false},
-    {"title": "Add your product", "isCompleted": false},
-    {"title": "Customize your online store", "isCompleted": true},
-    {"title": "Add pages to your store", "isCompleted": false},
-    {"title": "Organize navigation", "isCompleted": false},
+    {"title": "Name your store", "isCompleted": false},
+    {"title": "Add your products", "isCompleted": false},
+    {"title": "Customize your online store", "isCompleted": false},
     {"title": "Shipment and Delivery", "isCompleted": false},
-    {"title": "Payment", "isCompleted": false},
   ];
 
   @override
@@ -50,30 +50,48 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchSetupGuide(); // Reload the setup guide every time the user returns
+  }
+
+  bool _allStepsCompleted() {
+    return steps.every((step) => step["isCompleted"] == true);
+  }
+
   Future<void> _fetchSetupGuide() async {
     print("🛠️ Fetching Setup Guide");
     if (token == null || token!.isEmpty) {
-      print("❌ Token is missing.");
+      print(" Token is missing.");
       return;
     }
 
     try {
       final userController = UserController();
       final result = await userController.fetchSetupGuide(token!);
-
+      print("📡 Raw API Response: $result");
       if (result['success']) {
-        print("✅ Setup Guide fetched successfully.");
+        print(" Setup Guide fetched successfully.");
 
         setState(() {
           steps = List<Map<String, dynamic>>.from(result['data']);
         });
 
-        print("🔄 Updated steps: $steps");
+        print(" Updated steps: $steps");
+
+        if (_allStepsCompleted()) {
+          print("all steps are completed");
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isSetupCompleted', true);
+        } else {
+          print(' Failed to fetch setup guide: ${result['message']}');
+        }
       } else {
-        print('❌ Failed to fetch setup guide: ${result['message']}');
+        print(' Failed to fetch setup guide: ${result['message']}');
       }
     } catch (error) {
-      print("❌ Error fetching setup guide: $error");
+      print(" Error fetching setup guide: $error");
     }
   }
 
@@ -111,6 +129,85 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
         isLoading = false;
       });
     }
+  }
+
+  Future<bool> isSetupCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isSetupCompleted') ?? false;
+  }
+
+  Future<void> _launchStore() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // حفظ حالة الإطلاق في Shared Preferences
+    await prefs.setBool('storeLaunched', true);
+    print("🚀 Store Launched!");
+
+    //  post-Launch Dashboard
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostLaunchDashboard(
+            token: widget.token), // ✅ انتقال للداشبورد الجديدة
+      ),
+    );
+  }
+
+  Widget _buildLaunchStoreSection() {
+    return FutureBuilder<bool>(
+      future: isSetupCompleted(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SizedBox.shrink(); //
+        }
+
+        if (snapshot.hasData && snapshot.data == true) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 6,
+              color: const Color.fromARGB(255, 221, 229, 236),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      "All things are ready to launch your store!",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _launchStore,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        "🚀 Launch now",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return SizedBox.shrink(); // إذا لم تكتمل الخطوات، لا يظهر شيء
+      },
+    );
   }
 
   // Calculate progress based on completed steps
@@ -240,14 +337,14 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
 
                       setState(() {
                         if (result is String) {
-                          token = result; // ✅ Update token
+                          token = result; //  Update token
                         }
                       });
 
-                      _fetchSetupGuide(); // ✅ Reload setup guide
+                      _fetchSetupGuide(); // Reload setup guide
                     } else {
                       print(
-                          "⚠️ No result returned, _fetchSetupGuide() will not be called.");
+                          " No result returned, _fetchSetupGuide() will not be called.");
                     }
                   },
                 ),
@@ -297,12 +394,10 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
       ),
       onTap: () {
         Navigator.pop(context); // Close the drawer
-        // Handle navigation logic
       },
     );
   }
 
-// Helper to build sub-menu item
   Widget _buildSubMenuItem(String title, BuildContext context) {
     return ListTile(
       title: Text(
@@ -311,7 +406,6 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
       ),
       onTap: () {
         Navigator.pop(context); // Close the drawer
-        // Handle navigation logic
       },
     );
   }
@@ -458,7 +552,9 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                   ),
                 ),
               ),
+              _buildLaunchStoreSection(),
               SizedBox(height: 35),
+
               // Setup Guide Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -508,8 +604,7 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                     trailing: Icon(Icons.arrow_forward,
                                         color: Colors.teal),
                                     onTap: () async {
-                                      if (step["title"] ==
-                                          "Name your product") {
+                                      if (step["title"] == "Name your store") {
                                         final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -522,26 +617,62 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                         if (result == true) {
                                           print(
                                               "🔄 Reloading setup guide after store update...");
-                                          _fetchSetupGuide(); // ✅ إعادة تحميل البيانات بعد التحديث
+                                          _fetchSetupGuide();
                                         }
                                       } else if (step["title"] ==
-                                          "Add your product") {
-                                        // ✅ Second Step: Navigate to Add Product Page
+                                          "Add your products") {
+                                        //  Second Step: Navigate to Add Product Page
                                         final result = await Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddProductPage(), // ✅ Navigate to Add Product Page
+                                            builder: (context) => AddProductPage(
+                                                token: widget
+                                                    .token), // ✅ Navigate to Add Product Page
                                           ),
                                         );
 
                                         if (result == true) {
                                           print(
                                               "🔄 Reloading setup guide after adding product...");
-                                          _fetchSetupGuide(); // ✅ Reload setup guide after returning
+                                          _fetchSetupGuide(); // Reload setup guide after returning
+                                        }
+                                      } else if (step["title"] ==
+                                          "Customize your online store") {
+                                        //  Second Step: Navigate to Add Product Page
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                CustomizeStorePage(
+                                                    token: widget
+                                                        .token), // ✅ Navigate to Add Product Page
+                                          ),
+                                        );
+
+                                        if (result == true) {
+                                          print(
+                                              "🔄 Reloading setup guide after adding product...");
+                                          _fetchSetupGuide(); // Reload setup guide after returning
+                                        }
+                                      } else if (step["title"] ==
+                                          "Shipment and delivery") {
+                                        //  Second Step: Navigate to Add Product Page
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ShippingListPage(
+                                                token: widget
+                                                    .token), // ✅ Navigate to Add Product Page
+                                          ),
+                                        );
+
+                                        if (result == true) {
+                                          _fetchSetupGuide(); // Reload setup guide after returning
+                                          print(
+                                              "🔄 Reloading setup guide after adding product...");
                                         }
                                       } else {
-                                        // ✅ Default behavior for other steps (optional)
+                                        //  Default behavior for other steps (optional)
                                         print(
                                             "No specific navigation for this step.");
                                       }
@@ -551,9 +682,7 @@ class _DashboardStoreOwnerPageState extends State<DashboardStoreOwnerPage> {
                                 ],
                               );
                             }).toList()
-                          : [
-                              Text("No setup guide found")
-                            ], // ✅ عرض رسالة إذا لم تكن هناك خطوات
+                          : [Text("No setup guide found")],
                     ),
                   ),
                 ),

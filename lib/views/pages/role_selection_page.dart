@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'choosePlan_page.dart';
+
 import 'SignUpStoreEmployeeElderly_page.dart';
 import 'SignUpStoreEmployeecolorblind_Normal_page.dart ';
 import 'SignupStoreEmployeeLowVision_page.dart';
+
+import 'SignUpStaffcolorblind_Normal_page.dart';
 
 class RoleSelectionPage extends StatefulWidget {
   const RoleSelectionPage({super.key});
@@ -16,6 +20,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
   String selectedRole = "";
   String? colorBlindType;
   String? userStatus;
+  final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -31,7 +36,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
     });
   }
 
-    Future<void> _loadUserStatus() async {
+  Future<void> _loadUserStatus() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       userStatus = prefs.getString('user_status') ?? 'none';
@@ -39,51 +44,57 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
     debugPrint("User status loaded: $userStatus");
   }
 
+  Future<void> _speak(String text) async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
+  }
+
   ColorFilter _getColorFilter(String? type) {
     switch (type) {
-      case 'protanomaly': // Reduced sensitivity to red
+      case 'protanomaly':
         return const ColorFilter.mode(
-          Color(0xFFFFD1DC), // Light pink to enhance red
+          Color(0xFFFFD1DC),
           BlendMode.modulate,
         );
-      case 'deuteranomaly': // Reduced sensitivity to green
+      case 'deuteranomaly':
         return const ColorFilter.mode(
-          Color(0xFFDAF7A6), // Light green to enhance green
+          Color(0xFFDAF7A6),
           BlendMode.modulate,
         );
-      case 'tritanomaly': // Reduced sensitivity to blue
+      case 'tritanomaly':
         return const ColorFilter.mode(
-          Color(0xFFA6E3FF), // Light cyan to enhance blue
+          Color(0xFFA6E3FF),
           BlendMode.modulate,
         );
-      case 'protanopia': // Red-blind
+      case 'protanopia':
         return const ColorFilter.mode(
-          Color(0xFFFFA07A), // Light salmon to compensate for red blindness
+          Color(0xFFFFA07A),
           BlendMode.modulate,
         );
-      case 'deuteranopia': // Green-blind
+      case 'deuteranopia':
         return const ColorFilter.mode(
-          Color(0xFF98FB98), // Pale green to compensate for green blindness
+          Color(0xFF98FB98),
           BlendMode.modulate,
         );
-      case 'tritanopia': // Blue-blind
+      case 'tritanopia':
         return const ColorFilter.mode(
-          Color(0xFFADD8E6), // Light blue to compensate for blue blindness
+          Color(0xFFADD8E6),
           BlendMode.modulate,
         );
-      case 'achromatopsia': // Total color blindness
+      case 'achromatopsia':
         return const ColorFilter.mode(
-          Color(0xFFD3D3D3), // Light gray to provide neutral contrast
+          Color(0xFFD3D3D3),
           BlendMode.modulate,
         );
-      case 'achromatomaly': // Reduced total color sensitivity
+      case 'achromatomaly':
         return const ColorFilter.mode(
-          Color(0xFFEED5D2), // Light beige for better overall contrast
+          Color(0xFFEED5D2),
           BlendMode.modulate,
         );
       default:
         return const ColorFilter.mode(
-          Colors.transparent, // No filter for 'none' or unrecognized type
+          Colors.transparent,
           BlendMode.color,
         );
     }
@@ -97,6 +108,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
         setState(() {
           selectedRole = title;
         });
+        _speak("$title selected");
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
@@ -214,6 +226,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
               child: ElevatedButton(
                 onPressed: selectedRole.isNotEmpty
                     ? () {
+                        _speak("Role selected");
                         if (selectedRole == "Store Owner") {
                           Navigator.push(
                             context,
@@ -223,7 +236,7 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                             ),
                           );
                         } else if (selectedRole == "Store Employee") {
-                          if (userStatus == 'elderly') { // Sign up for Store Employee Elderly user
+                          if (userStatus == 'elderly') {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -231,7 +244,8 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                     SignUpStoreEmployeeElderlyPage(),
                               ),
                             );
-                          } else if (userStatus == 'colorblind' || userStatus == 'none') { // Sign up for Store Employee normal or colorblind user
+                          } else if (userStatus == 'colorblind' ||
+                              userStatus == 'none') {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -239,28 +253,27 @@ class _RoleSelectionPageState extends State<RoleSelectionPage> {
                                     SignUpStoreStoreEmployeeColorBlindNormalPage(),
                               ),
                             );
-                          } else if (userStatus == 'low_vision') { // Sign up for Store Employee Elderly user
+                          } else if (userStatus == 'low_vision') {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
                                     SignUpStoreEmployeeBlindPage(),
+
                               ),
                             );
                           }
-                          // Sign up for Store Employee low vision user
-
-
                         } else if (selectedRole == "Staff") {
-                          // Sign up for Staff Elderly user
-
-                          // Sign up for Staff normal or colorblind user
-
-                        } else if (selectedRole == "Customer") {
-                          // Sign up for Customer Elderly user
-
-                          // Sign up for Customer normal or colorblind user
-
+                          if (userStatus == 'colorblind' ||
+                              userStatus == 'none') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SignUpStaffColorBlindNormalPage(),
+                              ),
+                            );
+                          }
                         }
                       }
                     : null,

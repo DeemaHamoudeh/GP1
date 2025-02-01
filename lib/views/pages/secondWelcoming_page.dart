@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'thirdWelcoming_page.dart';
 import 'package:frontend/constants/colors.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
 
 class SecondWelcomingPage extends StatefulWidget {
   const SecondWelcomingPage({super.key});
@@ -12,10 +14,16 @@ class SecondWelcomingPage extends StatefulWidget {
 
 class _SecondWelcomingPageState extends State<SecondWelcomingPage> {
   String? colorBlindType;
+  late FlutterTts _flutterTts;
 
   @override
   void initState() {
     super.initState();
+    _flutterTts = FlutterTts();
+    _flutterTts.setLanguage("en-US"); // Set language
+    _flutterTts.setSpeechRate(0.5);   // Adjust speech rate
+    _flutterTts.setVolume(2.0);       // Set volume
+    _flutterTts.setPitch(1.0);
     _loadColorBlindType();
   }
 
@@ -75,13 +83,24 @@ class _SecondWelcomingPageState extends State<SecondWelcomingPage> {
         );
     }
   }
+  Future<void> _speak(String text) async {
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setPitch(1.0);
+    await _flutterTts.speak(text);
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorFilter = _getColorFilter(colorBlindType);
 
     return Scaffold(
-      body: ColorFiltered(
+     body: GestureDetector(
+      onTap: () async {
+        await _speak("Effortlessly manage your products and track orders in one place");
+        await Future.delayed(const Duration(seconds: 1));
+        // await _speak("Next");
+      },
+      child: ColorFiltered(
         colorFilter: colorFilter,
         child: ListView(
           children: [
@@ -191,6 +210,7 @@ class _SecondWelcomingPageState extends State<SecondWelcomingPage> {
           ],
         ),
       ),
+     ),
     );
   }
 }

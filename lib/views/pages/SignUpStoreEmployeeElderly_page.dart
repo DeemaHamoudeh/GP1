@@ -17,11 +17,10 @@ class _SignUpStoreEmployeeElderlyPageState
 
   // List of job positions
   final List<String> _jobPositions = [
-    'Inventory Manager',
-    'Customer Service',
-    'Stock Associate',
-    'Sales Assistant',
-    'Shift Supervisor',
+    "order management",
+    "products management",
+    "delivary management",
+    "Report & Analytics",
   ];
 
   String? _selectedJobPosition; // Variable to hold the selected position
@@ -100,17 +99,10 @@ class _SignUpStoreEmployeeElderlyPageState
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      labelText: "First Name",
+                      labelText: "userame",
                       icon: Icons.person,
                       validator: (value) =>
-                          value!.isEmpty ? "Please enter your first name" : null,
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTextField(
-                      labelText: "Last Name",
-                      icon: Icons.person_outline,
-                      validator: (value) =>
-                          value!.isEmpty ? "Please enter your last name" : null,
+                          value!.isEmpty ? "Please enter your username" : null,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
@@ -145,11 +137,60 @@ class _SignUpStoreEmployeeElderlyPageState
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
-                      labelText: "Store ID you want to apply for",
+                      labelText: "Store Name you want to apply for",
                       icon: Icons.store,
                       validator: (value) => value!.length < 5
-                          ? "Please enter Store ID (it should be 5 numbers)"
+                          ? "Please enter Store Name"
                           : null,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "Security Question 1: What is your favorite color?",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: AppColors.basicBackgroundColor,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "Security Question 2: What is your pet's name?",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: AppColors.basicBackgroundColor,
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "Security Question 3: What is your childhood nickname?",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: AppColors.basicBackgroundColor,
+                          size: 24,
+                        ),
+                      ),
+
                     ),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(

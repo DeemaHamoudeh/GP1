@@ -13,7 +13,7 @@ Future<void> _markStepAsCompleted() async {
 
 class StoreDetailsPage extends StatefulWidget {
   final String? token;
-  const StoreDetailsPage({super.key, required this.token});
+  const StoreDetailsPage({Key? key, required this.token}) : super(key: key);
 
   @override
   _StoreDetailsPageState createState() => _StoreDetailsPageState();
@@ -31,7 +31,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
 
   late String? token;
   String? storeId;
-  final List<String> _categories = [
+  List<String> _categories = [
     "Fashion & Apparel",
     "Electronics & Gadgets",
     "Food & Beverage",
@@ -657,7 +657,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
       Function(String) onSave) {
     final TextEditingController controller = TextEditingController();
     controller.text = initialValue;
-    final formKey = GlobalKey<FormState>();
+    final _formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -665,7 +665,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
         return AlertDialog(
           title: Text("Edit $label"),
           content: Form(
-            key: formKey,
+            key: _formKey,
             child: TextFormField(
               controller: controller,
               decoration: InputDecoration(
@@ -705,7 +705,7 @@ class _StoreDetailsPageState extends State<StoreDetailsPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate()) {
                   onSave(controller.text);
                   Navigator.pop(context); // Close the dialog
                 }

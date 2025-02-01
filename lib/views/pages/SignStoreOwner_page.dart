@@ -2,6 +2,9 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
+import 'package:frontend/views/pages/StoreOwner/dashBoardStoreOwner_page.dart';
+import 'choosePlan_page.dart';
+import 'payment_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/userController.dart';
 
@@ -10,10 +13,10 @@ class SignUpStoreOwnerPage extends StatefulWidget {
   final String plan;
 
   const SignUpStoreOwnerPage({
-    super.key,
+    Key? key,
     required this.role,
     required this.plan,
-  });
+  }) : super(key: key);
 
   @override
   State<SignUpStoreOwnerPage> createState() => _SignUpStoreOwnerPageState();
@@ -28,7 +31,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  // final FocusNode _usernameFocusNode = FocusNode(); // Add FocusNode
+  final FocusNode _usernameFocusNode = FocusNode(); // Add FocusNode
   bool isPaidAccount = false;
   bool isUsernameValid = false; // New variable to track username validity
   bool isEmailValid = false;
@@ -131,12 +134,12 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
     return null;
   }
 
-  // void _checkPasswordStrength(String value) {
-  //   setState(() {
-  //     isPasswordValid = _validatePassword(value) == null;
-  //     hasPasswordBeenInteracted = true;
-  //   });
-  // }
+  void _checkPasswordStrength(String value) {
+    setState(() {
+      isPasswordValid = _validatePassword(value) == null;
+      hasPasswordBeenInteracted = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -207,7 +210,6 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                     ),
 
                     const SizedBox(height: 20),
-
                     TextFormField(
                       controller: _usernameController,
                       decoration: InputDecoration(
@@ -435,27 +437,19 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                             final confirmPassword =
                                 _confirmPasswordController.text.trim();
                             final condition = selectedAccessibility ?? 'None';
-                            final typecolorblind = 'None';
-                            final firstSecurityQuestion = null;
-                            final secondSecurityQuestion = null;
-                            final thirdSecurityQuestion = null;
 
                             if (isPaidAccount) {
                               print("paidd");
-
-                              // Navigate to the payment details page
+                              //Navigate to the payment details page
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
-                              //     builder: (context) => PaymentDetailsPage(
+                              //     builder: (context) => PaymentPage(
                               //       username: username,
                               //       email: email,
                               //       password: password,
+                              //       confirmPassword: confirmPassword,
                               //       condition: condition,
-                              //       typecolorblind: typecolorblind,
-                              //      firstSecurityQuestion: firstSecurityQuestion,
-                              //      secondSecurityQuestion: secondSecurityQuestion,
-                              //      thirdSecurityQuestion: thirdSecurityQuestion,
                               //       role: widget.role,
                               //       plan: widget.plan,
                               //     ),
@@ -471,10 +465,6 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                                 role: widget.role,
                                 plan: widget.plan,
                                 condition: condition,
-                                typecolorblind: typecolorblind,
-                                firstSecurityQuestion: firstSecurityQuestion,
-                                secondSecurityQuestion: secondSecurityQuestion,
-                                thirdSecurityQuestion: thirdSecurityQuestion,
                               );
 
                               // Handle signup result
@@ -483,7 +473,19 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                               });
 
                               if (result['success']) {
+                                print("hoo");
                                 print("Signup successful!");
+                                // navigate
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DashboardStoreOwnerPage(
+                                            token: result['token']),
+                                  ),
+                                );
+                                print("replace");
                               } else {
                                 print("Signup failed: ${result['message']}");
                               }
@@ -499,7 +501,7 @@ class _SignUpStoreOwnerPageState extends State<SignUpStoreOwnerPage> {
                           backgroundColor: Colors.transparent,
                         ).copyWith(
                           shadowColor:
-                              WidgetStateProperty.all(Colors.transparent),
+                              MaterialStateProperty.all(Colors.transparent),
                         ),
                         child: Ink(
                           decoration: BoxDecoration(

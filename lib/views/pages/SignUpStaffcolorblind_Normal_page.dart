@@ -2,34 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For FilteringTextInputFormatter
 import 'package:frontend/constants/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For SharedPreferences
-import 'jobPosts_page.dart';
+// import 'jobPosts_page.dart';
+import 'delivery_page.dart';
+import 'arrange_page.dart';
+import 'prepareOrders_page.dart';
 
-class SignUpStoreStoreEmployeeColorBlindNormalPage extends StatefulWidget {
-  const SignUpStoreStoreEmployeeColorBlindNormalPage({
+class SignUpStaffColorBlindNormalPage extends StatefulWidget {
+  const SignUpStaffColorBlindNormalPage({
     super.key,
   });
 
   @override
-  State<SignUpStoreStoreEmployeeColorBlindNormalPage> createState() => _SignUpStoreStoreEmployeePageState();
+  State<SignUpStaffColorBlindNormalPage> createState() =>
+      _SignUpStoreStoreEmployeePageState();
 }
 
 class _SignUpStoreStoreEmployeePageState
-    extends State<SignUpStoreStoreEmployeeColorBlindNormalPage> {
-    final TextEditingController _coverLetterController = TextEditingController();
-
+    extends State<SignUpStaffColorBlindNormalPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _employeeIdController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  final List<String> _jobPositions = [
-    'Inventory Manager',
-    'Customer Service',
-    'Stock Associate',
-    'Sales Assistant',
-    'Shift Supervisor',
-  ];
+  // final FocusNode _usernameFocusNode = FocusNode(); // Add FocusNode
+  bool isUsernameValid = false; // New variable to track username validity
+  bool isEmailValid = false;
+  bool isPasswordValid = false;
+  bool hasUsernameBeenInteracted = false;
+  bool hasEmailBeenInteracted = false;
+  bool hasPasswordBeenInteracted = false;
+  bool hasConfirmPasswordBeenInteracted = false;
 
-  String? _selectedJobPosition;
+  final List<String> _reservedWords = ['null', 'admin', 'support'];
 
   String? colorBlindType;
+  String? username;
 
   @override
   void initState() {
@@ -43,6 +52,79 @@ class _SignUpStoreStoreEmployeePageState
     setState(() {
       colorBlindType = prefs.getString('colorblind_type') ?? 'none';
     });
+  }
+
+  // Save username to SharedPreferences
+  Future<void> _saveUsername(String username) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+  }
+
+  String? _validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter your username.";
+    }
+    if (value.length < 3 || value.length > 15) {
+      return "Username must be between 3 to 15 characters.";
+    }
+    if (!RegExp(r'^[a-zA-Z0-9_.]+$').hasMatch(value)) {
+      return "Username can only contain letters, numbers, '_' and '.'.";
+    }
+    if (value.replaceAll(RegExp(r'[^a-zA-Z]'), '').length < 3) {
+      return "Username must contain at least 3 letters.";
+    }
+    if (_reservedWords.contains(value.toLowerCase())) {
+      return "This username is reserved. Please choose another.";
+    }
+    return null; // Valid username
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter your email.";
+    }
+    // Simple regex for email validation
+    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value)) {
+      return "Please enter a valid email address.";
+    }
+    return null; // Valid email
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Please enter your password.";
+    }
+
+    // Check if the password is at least 9 characters long
+    if (value.length < 9) {
+      return "Password must be at least 9 characters.";
+    }
+
+    // Check for at least one letter
+    if (!RegExp(r'[A-Za-z]').hasMatch(value)) {
+      return "Password must contain at least one letter.";
+    }
+
+    // Check for at least one number
+    if (!RegExp(r'\d').hasMatch(value)) {
+      return "Password must contain at least one number.";
+    }
+
+    // Check for at least one special character
+    if (!RegExp(r'[@$!%*?&]').hasMatch(value)) {
+      return "Password must contain at least one special character.";
+    }
+
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value != _passwordController.text) {
+      return "Passwords do not match.";
+    }
+    return null;
   }
 
   // Map the colorBlindType string to a ColorFilter
@@ -95,29 +177,49 @@ class _SignUpStoreStoreEmployeePageState
         );
     }
   }
-    void _showConfirmationMessage() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        content: const Text(
-          "Your information has been submitted successfully!",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
-    );
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context); // Close the confirmation message
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const JobPostsPage()),
-      );
-    });
+  void _showConfirmationMessage(String employeeID) async {
+    if (_formKey.currentState!.validate()) {
+      // Save username to SharedPreferences
+      if (username != null) await _saveUsername(username!);
+
+      // Navigate based on employee ID
+      if (employeeID == "98006") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) =>  DeliveryPage()),
+        );
+      } else if (employeeID == "65223") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) =>  ArrangePage()),
+        );
+      } else if (employeeID == "38765") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PrepareOrdersPage()),
+        );
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            content: const Text(
+              "Invalid Employee ID",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +231,6 @@ class _SignUpStoreStoreEmployeePageState
           colorFilter: colorFilter,
           child: Stack(
             children: [
-              // Background Image
               Positioned.fill(
                 child: Container(
                   decoration: const BoxDecoration(
@@ -140,7 +241,6 @@ class _SignUpStoreStoreEmployeePageState
                   ),
                 ),
               ),
-              // Back Button
               Positioned(
                 top: 40,
                 left: 8,
@@ -153,7 +253,6 @@ class _SignUpStoreStoreEmployeePageState
                   },
                 ),
               ),
-              // Sign-Up Form
               Positioned(
                 top: 120,
                 left: 0,
@@ -166,7 +265,6 @@ class _SignUpStoreStoreEmployeePageState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Page Title
                         Text(
                           "Create new account",
                           style: const TextStyle(
@@ -177,83 +275,162 @@ class _SignUpStoreStoreEmployeePageState
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Sign up as Store StoreEmployee (${colorBlindType ?? 'Normal Vision'}))",
+                          "Sign up as Staff (${colorBlindType ?? 'Normal Vision'})",
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Form Fields
-                        _buildTextField(
-                          labelText: "First Name",
-                          icon: Icons.person,
-                          validator: (value) => value!.isEmpty
-                              ? "Please enter your first name"
-                              : null,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          labelText: "Last Name",
-                          icon: Icons.person_outline,
-                          validator: (value) =>
-                              value!.isEmpty ? "Please enter your last name" : null,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          labelText: "Email",
-                          icon: Icons.email_outlined,
-                          validator: (value) =>
-                              value!.isEmpty ? "Please enter your Email" : null,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          labelText: "Password",
-                          icon: Icons.lock_outline,
-                          isPassword: true,
-                          validator: (value) => value!.length < 8
-                              ? "Password must be at least 8 characters"
-                              : null,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          labelText: "Confirm Password",
-                          icon: Icons.lock,
-                          isPassword: true,
-                          validator: (value) => value!.isEmpty
-                              ? "Please confirm your password"
-                              : null,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildTextField(
-                          labelText: "Store ID you what to apply for",
-                          icon: Icons.lock,
-                          validator: (value) => value!.length < 5
-                              ? "please enter Store ID (it should be 5 numbers)"
-                              : null,
-                        ),
-                        const SizedBox(height: 20),
-                        DropdownButtonFormField<String>(
+
+                        TextFormField(
+                          controller: _usernameController,
                           decoration: InputDecoration(
-                            labelText: "Job Position",
+                            labelText: "Username",
+                            filled: true,
+                            fillColor: Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
+                            prefixIcon: Icon(
+                              Icons.person,
+                              color: AppColors.basicBackgroundColor,
+                              size: 24,
+                            ),
+                            suffixIcon: isUsernameValid
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 24,
+                                  )
+                                : null, // Show check icon if valid
+
+                            errorText: hasUsernameBeenInteracted
+                                ? _validateUsername(_usernameController.text)
+                                : null, // Only show error after user interaction
+                            // Only show error if field is focused
                           ),
-                          items: _jobPositions.map((String position) {
-                            return DropdownMenuItem<String>(
-                              value: position,
-                              child: Text(position),
-                            );
-                          }).toList(),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[a-zA-Z0-9_.]')),
+                          ],
                           onChanged: (value) {
                             setState(() {
-                              _selectedJobPosition = value;
+                              // Trigger real-time validation
+                              isUsernameValid = _validateUsername(value) == null;
+                              hasUsernameBeenInteracted = true;
                             });
                           },
-                          validator: (value) =>
-                              value == null ? "Please select a job position" : null,
                         ),
+
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email,
+                              color: AppColors.basicBackgroundColor,
+                              size: 24,
+                            ),
+                            suffixIcon: isEmailValid
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 24,
+                                  )
+                                : null, // Show check icon if valid
+                            errorText: hasEmailBeenInteracted
+                                ? _validateEmail(_emailController.text)
+                                : null, // Show error after interaction
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          onChanged: (value) {
+                            setState(() {
+                              isEmailValid = _validateEmail(value) == null;
+                              hasEmailBeenInteracted = true;
+                            });
+                          },
+                          validator: _validateEmail, // Apply validation here
+                        ),
+
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: "Password",
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: AppColors.basicBackgroundColor,
+                              size: 24,
+                            ),
+                            suffixIcon: isPasswordValid
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 24,
+                                  )
+                                : null, // Show check icon if valid
+                            errorText: hasPasswordBeenInteracted
+                                ? _validatePassword(_passwordController.text)
+                                : null,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              isPasswordValid = _validatePassword(value) == null;
+                              hasPasswordBeenInteracted = true;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: "Confirm Password",
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: AppColors.basicBackgroundColor,
+                              size: 24,
+                            ),
+                            suffixIcon: _passwordController.text.isNotEmpty &&
+                                    _confirmPasswordController.text.isNotEmpty &&
+                                    _confirmPasswordController.text ==
+                                        _passwordController.text
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 24,
+                                  )
+                                : null, // Show check icon if passwords match
+                            errorText: hasConfirmPasswordBeenInteracted
+                                ? _validateConfirmPassword(
+                                    _confirmPasswordController.text)
+                                : null,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              hasConfirmPasswordBeenInteracted = true;
+                            });
+                          },
+                        ),
+
                         const SizedBox(height: 20),
                         _buildTextField(
                           labelText: "Phone Number",
@@ -267,31 +444,27 @@ class _SignUpStoreStoreEmployeePageState
                               : null,
                         ),
                         const SizedBox(height: 20),
-                          const Text(
-                            "Cover Letter",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            controller: _coverLetterController,
-                            maxLines: 6,
-                            decoration: InputDecoration(
-                              hintText: "Write your cover letter here...",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            validator: (value) => value!.isEmpty
-                                ? "Please write a cover letter"
-                                : null,
-                          ),
+                        _buildTextField(
+                          labelText: "Employee ID",
+                          icon: Icons.lock,
+                          controller: _employeeIdController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter your ID";
+                            } else if (value.length != 5) {
+                              return "Please enter exactly 5 digits";
+                            }
+                            return null;
+                          },
+                        ),
                         const SizedBox(height: 40),
                         Center(
-                              child: ElevatedButton(
+                          child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                            _showConfirmationMessage();
-                            }
+                                    final employeeID = _employeeIdController.text;
+                                _showConfirmationMessage(employeeID);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(
@@ -302,7 +475,7 @@ class _SignUpStoreStoreEmployeePageState
                               backgroundColor: Colors.transparent,
                             ).copyWith(
                               shadowColor:
-                                  WidgetStateProperty.all(Colors.transparent),
+                                  MaterialStateProperty.all(Colors.transparent),
                             ),
                             child: Ink(
                               decoration: BoxDecoration(
@@ -317,20 +490,21 @@ class _SignUpStoreStoreEmployeePageState
                                 borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color.fromARGB(100, 60, 172, 161),
-                                    offset: Offset(0, 4),
+                                    color: const Color.fromARGB(
+                                        100, 60, 172, 161),
+                                    offset: const Offset(0, 4),
                                     blurRadius: 8,
                                     spreadRadius: 5,
                                   ),
                                 ],
                               ),
                               child: Container(
-                                constraints:
-                                    BoxConstraints(minWidth: 88, minHeight: 44),
+                                constraints: const BoxConstraints(
+                                    minWidth: 88, minHeight: 44),
                                 alignment: Alignment.center,
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
-                                  children: [
+                                  children: const [
                                     Icon(Icons.check_circle,
                                         color: Colors.white, size: 24),
                                     SizedBox(width: 8),
@@ -339,7 +513,7 @@ class _SignUpStoreStoreEmployeePageState
                                 ),
                               ),
                             ),
-                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -360,8 +534,10 @@ class _SignUpStoreStoreEmployeePageState
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
+    TextEditingController? controller,
   }) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),

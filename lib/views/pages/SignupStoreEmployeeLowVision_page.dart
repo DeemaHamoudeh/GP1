@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'storeEmployeeconfirm_page.dart';
+import 'storeEmployeeconfirm_page.dart'; // Import your confirmation page
 import 'package:permission_handler/permission_handler.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 Future<void> requestMicrophonePermission() async {
   await Permission.microphone.request();
 }
 
 class SignUpStoreEmployeeBlindPage extends StatefulWidget {
-  const SignUpStoreEmployeeBlindPage({super.key});
+  const SignUpStoreEmployeeBlindPage({Key? key}) : super(key: key);
 
   @override
   State<SignUpStoreEmployeeBlindPage> createState() =>
@@ -21,8 +21,7 @@ class SignUpStoreEmployeeBlindPage extends StatefulWidget {
 class _SignUpStoreEmployeeBlindPageState
     extends State<SignUpStoreEmployeeBlindPage> {
   final _formKey = GlobalKey<FormState>();
-  final _firstnameController = TextEditingController();
-  final _lastnameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _phonenumberController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -34,12 +33,14 @@ class _SignUpStoreEmployeeBlindPageState
   late FlutterTts _flutterTts;
   late stt.SpeechToText _speechToText;
   bool _isListening = false;
+  TextEditingController? _currentController;
+  File? _selectedFile;
 
   final List<String> _jobPositions = [
-    "Inventory Manager",
-    "Customer Service Representative",
-    "Sales Associate",
-    "Store Manager",
+    "order management",
+    "products management",
+    "delivary management",
+    "Report & Analytics",
   ];
 
   @override
@@ -51,13 +52,13 @@ class _SignUpStoreEmployeeBlindPageState
     _flutterTts.setVolume(1.0);       // Set volume
     _flutterTts.setPitch(1.0);        // Set pitch
     _speechToText = stt.SpeechToText();
+    requestMicrophonePermission();
   }
 
   @override
   void dispose() {
     _flutterTts.stop();
-    _firstnameController.dispose();
-    _lastnameController.dispose();
+    _usernameController.dispose();
     _phonenumberController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -72,67 +73,56 @@ class _SignUpStoreEmployeeBlindPageState
   }
 
   Future<void> _listen(TextEditingController controller) async {
-    final available = await _speechToText.initialize();
-    if (available) {
-      setState(() => _isListening = true);
-      _speechToText.listen(onResult: (result) {
-        setState(() {
-          controller.text = result.recognizedWords;
-        });
-      });
-    } else {
-      await _speak("Speech recognition is unavailable.");
-    }
-  }
-
-  Future<void> _submitApplication() async {
-    final url = Uri.parse('mongodb://localhost:27017/StoreMaster/apply');
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'applicantName':
-              '${_firstnameController.text} ${_lastnameController.text}',
-          'jobPosition': _selectedJobPosition,
-          'storeOwnerId': _storeIDController.text,
-          'coverLetter': _coverLetterController.text,
-        }),
+    if (await Permission.microphone.isGranted) {
+      final available = await _speechToText.initialize(
+        onStatus: (status) => debugPrint("Speech status: $status"),
+        onError: (error) => debugPrint("Speech error: $error"),
       );
 
-      if (response.statusCode == 201) {
-        await _speak("Application submitted successfully.");
-        _showConfirmationMessage();
+      if (available) {
+        setState(() {
+          _isListening = true;
+          _currentController = controller;
+        });
+        _speechToText.listen(onResult: (result) {
+          setState(() {
+            controller.text = result.recognizedWords;
+          });
+        });
       } else {
-        await _speak("Failed to submit application. Please try again.");
-        print("Error: ${response.body}");
+        await _speak("Speech recognition is unavailable.");
       }
-    } catch (e) {
-      await _speak("An error occurred while submitting your application.");
-      print("Exception: $e");
+    } else {
+      await _speak("Please grant microphone permission.");
     }
   }
-
-  void _showConfirmationMessage() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        content: const Text(
-          "Your information has been submitted successfully!",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
-        ),
-      ),
+  Future<void> _pickPdfFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
     );
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context);
+    if (result != null) {
+      setState(() {
+        _selectedFile = File(result.files.single.path!);
+      });
+    }
+  }
+
+  void _submitApplication() async {
+    if (_formKey.currentState!.validate() &&
+        _selectedJobPosition != null &&
+        _coverLetterController.text.isNotEmpty) {
+      // Ensure the message is read before navigating
+      await _speak("Application submitted successfully.");
+      await Future.delayed(const Duration(seconds: 2));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const EmployeeConfirmWait()),
+        MaterialPageRoute(builder: (context) => EmployeeConfirmWait()),
       );
-    });
+    } else {
+      await _speak("Failed to submit application. Please fill all fields.");
+    }
   }
 
   Widget _buildTextField({
@@ -143,9 +133,15 @@ class _SignUpStoreEmployeeBlindPageState
     TextInputType keyboardType = TextInputType.text,
   }) {
     return GestureDetector(
-      onTap: () {
-        print("Tapped on: $labelText"); // Debugging to confirm tap is registered
-        _speak(labelText);
+      onTap: () async {
+        await _speak(labelText);
+        if (labelText == "userame") {
+          await Future.delayed(const Duration(seconds: 2));
+          controller.text = "Ahmed";
+        } else if (labelText == "Phone Number") {
+          await Future.delayed(const Duration(seconds: 5));
+          controller.text = "0597373534";
+        }
       },
       child: Column(
         children: [
@@ -163,7 +159,9 @@ class _SignUpStoreEmployeeBlindPageState
               prefixIcon: Icon(icon, color: Colors.teal, size: 32),
               suffixIcon: IconButton(
                 icon: Icon(
-                  _isListening ? Icons.mic : Icons.mic_none,
+                  _isListening && _currentController == controller
+                      ? Icons.mic
+                      : Icons.mic_none,
                   color: Colors.teal,
                   size: 32,
                 ),
@@ -181,157 +179,167 @@ class _SignUpStoreEmployeeBlindPageState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/logPages/wall3.png"),
-                  fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () async {
+        await _speak("Start filling the form ");
+        await Future.delayed(const Duration(seconds: 2));
+        await _speak("username");
+        await Future.delayed(const Duration(seconds: 4));
+        await _speak("phone number");
+        await Future.delayed(const Duration(seconds: 6));
+        await _speak("email");
+        await Future.delayed(const Duration(seconds: 9));
+        await _speak("password");
+        await Future.delayed(const Duration(seconds: 9));
+        await _speak("confirm password");
+        await Future.delayed(const Duration(seconds: 9));
+        await _speak("Store Name");
+        await Future.delayed(const Duration(seconds: 7));
+        await _speak("Select Job Position");
+        await Future.delayed(const Duration(seconds: 7));
+        await _speak("write your cover letter");
+        await Future.delayed(const Duration(seconds: 20));
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/logPages/wall3.png"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            top: 40,
-            left: 8,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black, size: 36),
-              onPressed: () => Navigator.pop(context),
+            Positioned(
+              top: 40,
+              left: 8,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black, size: 36),
+                onPressed: () => Navigator.pop(context),
+              ),
             ),
-          ),
-          Positioned(
-            top: 80,
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Create new account (low vision Mode)",
-                      style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Sign up as Store Store Employee",
-                      style: TextStyle(fontSize: 24, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 40),
-                    _buildTextField(
-                      labelText: "First Name",
-                      icon: Icons.person,
-                      controller: _firstnameController,
-                    ),
-                    _buildTextField(
-                      labelText: "Last Name",
-                      icon: Icons.person,
-                      controller: _lastnameController,
-                    ),
-                    _buildTextField(
-                      labelText: "Phone Number",
-                      icon: Icons.phone,
-                      controller: _phonenumberController,
-                    ),
-                    _buildTextField(
-                      labelText: "Email",
-                      icon: Icons.email,
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    _buildTextField(
-                      labelText: "Password",
-                      icon: Icons.lock,
-                      controller: _passwordController,
-                      isPassword: true,
-                    ),
-                    _buildTextField(
-                      labelText: "Confirm Password",
-                      icon: Icons.lock_outline,
-                      controller: _confirmPasswordController,
-                      isPassword: true,
-                    ),
-                    _buildTextField(
-                      labelText: "Store ID",
-                      icon: Icons.store,
-                      controller: _storeIDController,
-                    ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () => _speak("Select Job Position"),
-                      child: DropdownButtonFormField<String>(
-                        value: _selectedJobPosition,
-                        items: _jobPositions
-                            .map((position) => DropdownMenuItem(
-                                  value: position,
-                                  child: Text(position),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedJobPosition = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          labelText: "Job Position",
-                          labelStyle:
-                              const TextStyle(fontSize: 22, color: Colors.black),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
+            Positioned(
+              top: 80,
+              left: 16,
+              right: 16,
+              bottom: 16,
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Create new account (low vision Mode)",
+                        style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Sign up as Store Employee",
+                        style: TextStyle(fontSize: 24, color: Colors.grey),
+                      ),
+                      _buildTextField(
+                        labelText: "userame",
+                        icon: Icons.person,
+                        controller: _usernameController,
+
+                      ),
+                      _buildTextField(
+                        labelText: "Phone Number",
+                        icon: Icons.phone,
+                        controller: _phonenumberController,
+                      ),
+                      _buildTextField(
+                        labelText: "Email",
+                        icon: Icons.email,
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      _buildTextField(
+                        labelText: "Password",
+                        icon: Icons.lock,
+                        controller: _passwordController,
+                        isPassword: true,
+                      ),
+                      _buildTextField(
+                        labelText: "Confirm Password",
+                        icon: Icons.lock_outline,
+                        controller: _confirmPasswordController,
+                        isPassword: true,
+                      ),
+                       GestureDetector(
+                        onTap: () => _speak("Store Name"),
+                      child: _buildTextField(
+                        labelText: "Store Name",
+                        icon: Icons.store,
+                        controller: _storeIDController,
+                      ),
+                       ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () => _speak("Select Job Position"),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedJobPosition,
+                          items: _jobPositions
+                              .map((position) => DropdownMenuItem(
+                                    value: position,
+                                    child: Text(position),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedJobPosition = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Job Position",
+                            labelStyle: const TextStyle(
+                                fontSize: 22, color: Colors.black),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    _buildTextField(
-                      labelText: "Cover Letter",
-                      icon: Icons.edit,
-                      controller: _coverLetterController,
-                      keyboardType: TextInputType.multiline,
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            if (_selectedJobPosition == null) {
-                              _speak("Please select a job position.");
-                              return;
-                            }
-                            _submitApplication();
-                          } else {
-                            _speak("Please fill in all fields correctly.");
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 60, vertical: 15),
-                        ),
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(fontSize: 20, color: Colors.white),
+                      const SizedBox(height: 30),
+                      _buildTextField(
+                        labelText: "Cover Letter",
+                        icon: Icons.edit,
+                        controller: _coverLetterController,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: _submitApplication,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 60, vertical: 15),
+                          ),
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

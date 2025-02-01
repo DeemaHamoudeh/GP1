@@ -11,7 +11,7 @@ class SignUpOwnerBlindPage extends StatefulWidget {
   @override
   State<SignUpOwnerBlindPage> createState() => _SignUpOwnerBlindPageState();
 }
- 
+
 class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
   final _formKey = GlobalKey<FormState>();
   final _firstnameController = TextEditingController();
@@ -188,14 +188,9 @@ class _SignUpOwnerBlindPageState extends State<SignUpOwnerBlindPage> {
                     ),
                     const SizedBox(height: 40),
                     _buildTextField(
-                      labelText: "First Name",
+                      labelText: "userame",
                       icon: Icons.person,
                       controller: _firstnameController,
-                    ),
-                    _buildTextField(
-                      labelText: "Last Name",
-                      icon: Icons.person,
-                      controller: _lastnameController,
                     ),
                     _buildTextField(
                       labelText: "Phone Number",

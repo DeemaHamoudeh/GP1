@@ -327,7 +327,7 @@ class _SignUpStoreEmployeeBlindPageState extends State<SignUpStoreEmployeeBlindP
                   _isListening ? Icons.mic : Icons.mic_none,
                   color: Colors.teal,
                   size: 32,
-                ),
+                ), 
                 onPressed: () => _listen(controller),
               ),
             ),

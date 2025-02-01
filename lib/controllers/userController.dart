@@ -64,6 +64,7 @@ class UserController {
     String? secondSecurityQuestion,
     String? thirdSecurityQuestion,
     String? paymentMethod,
+    String? employeeID,
     Map<String, dynamic>? paymentDetails,
     String? paypalEmail,
   }) async {
@@ -95,6 +96,7 @@ class UserController {
             'firstSecurityQuestion': firstSecurityQuestion,
             'secondSecurityQuestion': secondSecurityQuestion,
             'thirdSecurityQuestion': thirdSecurityQuestion,
+            'employeeID': employeeID,
           },
         );
         print("1");
@@ -137,8 +139,10 @@ class UserController {
             'firstSecurityQuestion': firstSecurityQuestion,
             'secondSecurityQuestion': secondSecurityQuestion,
             'thirdSecurityQuestion': thirdSecurityQuestion,
+            'employeeID': employeeID,
             'paymentMethod': paymentMethod,
             'paypalEmail': paypalEmail,
+
           },
         );
 

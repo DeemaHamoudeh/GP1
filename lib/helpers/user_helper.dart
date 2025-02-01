@@ -5,12 +5,16 @@ class userApiHelper {
   static const String baseUrl = 'http://10.0.2.2:3000/storeMaster';
 
   // Static method for POST requests
-  static Future<http.Response> post(
-      String endpoint, Map<String, dynamic> body) async {
+  // Static method for POST requests with optional headers
+  static Future<http.Response> post(String endpoint, Map<String, dynamic> body,
+      {Map<String, String>? headers}) async {
     final url = Uri.parse('$baseUrl/$endpoint');
     return await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        ...?headers, // ✅ Allow additional headers (e.g., Authorization token)
+      },
       body: json.encode(body),
     );
   }

@@ -196,22 +196,22 @@ class _InitializationPageState extends State<InitializationPage>
                           }
 
                           // Navigate to the next page based on user type
-                          if (['elderly', 'low_vision']
-                              .contains(_selectedOption)) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginPage(),
-                              ),
-                            );
-                          } else {
+                          // if (['elderly', 'low_vision']
+                          //     .contains(_selectedOption)) {
+                          //   Navigator.pushReplacement(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => LoginPage(),
+                          //     ),
+                          //   );
+                          // } else {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => FirstWelcomingPage(),
                               ),
                             );
-                          }
+                          // }
                         } else {
                           // Show an alert if no option is selected
                           ScaffoldMessenger.of(context).showSnackBar(

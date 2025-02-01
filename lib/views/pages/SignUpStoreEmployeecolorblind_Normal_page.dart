@@ -12,7 +12,7 @@ class SignUpStoreStoreEmployeeColorBlindNormalPage extends StatefulWidget {
   @override
   State<SignUpStoreStoreEmployeeColorBlindNormalPage> createState() => _SignUpStoreStoreEmployeePageState();
 }
-
+ 
 class _SignUpStoreStoreEmployeePageState
     extends State<SignUpStoreStoreEmployeeColorBlindNormalPage> {
     final TextEditingController _coverLetterController = TextEditingController();
